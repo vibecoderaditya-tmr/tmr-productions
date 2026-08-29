@@ -1,0 +1,90 @@
+.row-wrap.top-frag-wrap {
+  z-index: 3;
+}
+.row-wrap.top-frag-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  animation: top-frag-glow 2.5s ease-in-out infinite;
+}
+@keyframes top-frag-glow {
+  0%,100% { box-shadow: inset 0 0 6px 2px color-mix(in srgb, var(--top-frag-color) 55%, transparent), inset 0 0 12px 4px color-mix(in srgb, var(--top-frag-color) 35%, transparent); }
+  50% { box-shadow: inset 0 0 10px 3px color-mix(in srgb, var(--top-frag-color) 80%, transparent), inset 0 0 18px 6px color-mix(in srgb, var(--top-frag-color) 50%, transparent); }
+}
+
+.row-wrap.top-frag-wrap .ticker-row .col-alive,
+.row-wrap.top-frag-wrap .ticker-row .col-elims,
+.row-wrap.top-frag-wrap .ticker-row .col-pts,
+.row-wrap.top-frag-wrap .ticker-row .col-end { background: var(--top-frag-color); }
+
+.anim-hide-left   { transform: translateX(-100%); opacity: 0; }
+.anim-hide-right  { transform: translateX(100%); opacity: 0; }
+.anim-in          { transform: translateX(0); opacity: 1; }
+
+.trans-anim {
+  transition: transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.55s ease;
+}
+.trans-anim-out {
+  transition: transform 0.5s cubic-bezier(0.55,0.06,0.68,0.53), opacity 0.5s ease;
+}
+
+.elim-overlay.not-played-overlay {
+  clip-path: inset(0 0 0 0);
+  background: rgba(0,0,0,0.6);
+  opacity: 1;
+  transition: none;
+}
+.elim-overlay.not-played-overlay span {
+  display: none;
+}
+
+.alive-bar {
+  width: var(--bar-width);
+  height: var(--bar-height);
+  background: var(--bar-dead);
+  border-radius: 2px;
+  transition: background 0.3s;
+}
+.alive-bar.active {
+  background: var(--bar-alive);
+}
+
+.elim-overlay {
+  position: absolute;
+  align-self: unset;
+  margin: 0;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 6px;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(200,40,40,0.95), rgba(160,20,20,0.95));
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.5s ease-in-out;
+}
+.elim-overlay.show {
+  clip-path: inset(0 0 0 0);
+}
+.elim-overlay.exit {
+  clip-path: inset(0 0 0 100%);
+}
+.elim-overlay.final {
+  clip-path: inset(0 0 0 0);
+  background: rgba(0,0,0,0.5);
+  transition: background 0.4s ease-in-out;
+}
+.elim-overlay.final span {
+  opacity: 0;
+}
+
+.anim-fade-in { opacity: 1; }
+.anim-fade-out { opacity: 0; }
+.trans-fade { transition: opacity 0.55s cubic-bezier(0.25,0.46,0.45,0.94); }
+.trans-fade-out { transition: opacity 0.5s cubic-bezier(0.55,0.06,0.68,0.53); }

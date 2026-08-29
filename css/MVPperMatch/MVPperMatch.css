@@ -1,0 +1,100 @@
+:root {
+  --mvp-canvas-width: 1920px;
+  --mvp-canvas-height: 1080px;
+  --mvp-box-width: 280px;
+  --mvp-box-height: auto;
+  --mvp-box-gap: 20px;
+  --mvp-box-radius: 12px;
+  --mvp-box-bg: rgba(0, 0, 0, 0.65);
+  --mvp-box-border-width: 2px;
+  --mvp-box-border-color: rgba(255, 255, 255, 0.12);
+  --mvp-row-gap: 0px;
+  --mvp-char-row-height: 390px;
+  --mvp-text-row-height: 90px;
+  --mvp-text-row-bg: rgba(0, 0, 0, 0.85);
+  --mvp-text-row-radius: 8px;
+  --mvp-text-row-border-width: 2px;
+  --mvp-text-row-border-color: rgba(255, 255, 255, 0.18);
+  --mvp-label-top: 10px;
+  --mvp-label-left: 12px;
+  --mvp-label-font-size: 32px;
+  --mvp-label-font-weight: 700;
+  --mvp-label-text-color: #fff;
+  --mvp-character-max-width: 100%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: var(--mvp-canvas-width);
+  height: var(--mvp-canvas-height);
+  overflow: hidden;
+  background: transparent;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+.mvp-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: var(--mvp-box-gap);
+}
+
+.mvp-box {
+  position: relative;
+  width: var(--mvp-box-width);
+  height: var(--mvp-box-height);
+  background: var(--mvp-box-bg);
+  border: var(--mvp-box-border-width) solid var(--mvp-box-border-color);
+  border-radius: var(--mvp-box-radius);
+  display: flex;
+  flex-direction: column;
+  gap: var(--mvp-row-gap);
+}
+
+.mvp-char-row {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--mvp-box-radius) var(--mvp-box-radius) 0 0;
+}
+
+.mvp-character {
+  width: var(--mvp-character-max-width);
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  pointer-events: none;
+}
+
+.mvp-text-row {
+  width: 100%;
+  height: var(--mvp-text-row-height);
+  background: var(--mvp-text-row-bg);
+  border: var(--mvp-text-row-border-width) solid var(--mvp-text-row-border-color);
+  border-radius: var(--mvp-text-row-radius);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mvp-label {
+  position: absolute;
+  top: var(--mvp-label-top);
+  left: var(--mvp-label-left);
+  font-size: var(--mvp-label-font-size);
+  font-weight: var(--mvp-label-font-weight);
+  color: var(--mvp-label-text-color);
+  line-height: 1;
+  user-select: none;
+  z-index: 10;
+}

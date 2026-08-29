@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>TMR â€” Map Randomizer</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<link rel="icon" type="image/x-icon" href="img/icon.ico">
+<link rel="stylesheet" href="css/randomMap/randomMap.css">
+</head>
+<body>
+
+<img id="mapBg" src="img/maps/bermuda.webp" alt="">
+<div class="overlay"></div>
+<div id="lockFlash"></div>
+<div id="lockedFrame"></div>
+
+<div class="content">
+  <div class="top-label">TMR Esports // Map Randomizer</div>
+  <div class="corner-tag">tmresports</div>
+
+  <div class="map-name-wrap">
+    <div class="map-eyebrow" id="eyebrow">Selecting map</div>
+    <div id="mapName">â€”</div>
+    <div class="speed-dots">
+      <div class="speed-dot active" id="d1"></div>
+      <div class="speed-dot active" id="d2"></div>
+      <div class="speed-dot active" id="d3"></div>
+      <div class="speed-dot active" id="d4"></div>
+      <div class="speed-dot active" id="d5"></div>
+    </div>
+    <div id="stateLabel">Initializing...</div>
+  </div>
+
+  <div class="bottom-bar">
+    <span>Free Fire Esports</span>
+    <div class="divider"></div>
+    <span>Map Pool S1</span>
+    <div class="divider"></div>
+    <span id="bottomMap">â€”</span>
+  </div>
+</div>
+
+<script src="js/randomMap.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>TMR OVERALL STANDINGS</title>
+<link rel="icon" type="image/x-icon" href="img/icon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<link rel="stylesheet" href="css/osPt/standard.css">
+<link rel="stylesheet" href="css/osPt/twoSided.css">
+<link rel="stylesheet" href="css/osPt/oneSided.css">
+</head>
+<body>
+
+<div class="osPrm" id="osPrm">
+  <div class="osx-wrap">
+    <div class="twoSided">
+    <div class="osx-cols">
+      <div class="osx-col">
+        <div class="osx-hdr"><span class="osx-hdr-rank">RANK</span><span class="osx-hdr-team">TEAM NAME</span><span class="osx-hdr-mp">MP</span><span class="osx-hdr-booyah"><img class="osx-booyah-img" src="img/booyah.webp" alt=""></span><span class="osx-hdr-elim">ELIM POINTS</span><span class="osx-hdr-place">PLACE POINTS</span><span class="osx-hdr-total">TOTAL POINTS</span></div>
+      </div>
+      <div class="osx-col">
+        <div class="osx-hdr"><span class="osx-hdr-rank">RANK</span><span class="osx-hdr-team">TEAM NAME</span><span class="osx-hdr-mp">MP</span><span class="osx-hdr-booyah"><img class="osx-booyah-img" src="img/booyah.webp" alt=""></span><span class="osx-hdr-elim">ELIM POINTS</span><span class="osx-hdr-place">PLACE POINTS</span><span class="osx-hdr-total">TOTAL POINTS</span></div>
+      </div>
+    </div>
+    <div class="maps-wrapper" id="mapsWrapper">
+      <div class="map-cell" data-box="1"><div class="map-game">GAME 1</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="2"><div class="map-game">GAME 2</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="3"><div class="map-game">GAME 3</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="4"><div class="map-game">GAME 4</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="5"><div class="map-game">GAME 5</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="6"><div class="map-game">GAME 6</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="7"><div class="map-game">GAME 7</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="8"><div class="map-game">GAME 8</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="9"><div class="map-game">GAME 9</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="10"><div class="map-game">GAME 10</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="11"><div class="map-game">GAME 11</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="12"><div class="map-game">GAME 12</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="13"><div class="map-game">GAME 13</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="14"><div class="map-game">GAME 14</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="15"><div class="map-game">GAME 15</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="16"><div class="map-game">GAME 16</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="17"><div class="map-game">GAME 17</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="18"><div class="map-game">GAME 18</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+    </div>
+    </div>
+    <div class="oneSided">
+      <div class="osx-cols one-cols">
+        <div class="osx-col">
+          <div class="osx-hdr"><span class="osx-hdr-rank">RANK</span><span class="osx-hdr-team">TEAM NAME</span><span class="osx-hdr-mp">MP</span><span class="osx-hdr-booyah"><img class="osx-booyah-img" src="img/booyah.webp" alt=""></span><span class="osx-hdr-elim">ELIM POINTS</span><span class="osx-hdr-place">PLACE POINTS</span><span class="osx-hdr-total">TOTAL POINTS</span></div>
+        </div>
+      </div>
+      <div class="maps-wrapper one-maps">
+      <div class="map-cell" data-box="1"><div class="map-game">GAME 1</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="2"><div class="map-game">GAME 2</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="3"><div class="map-game">GAME 3</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="4"><div class="map-game">GAME 4</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="5"><div class="map-game">GAME 5</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="6"><div class="map-game">GAME 6</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="7"><div class="map-game">GAME 7</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="8"><div class="map-game">GAME 8</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="9"><div class="map-game">GAME 9</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="10"><div class="map-game">GAME 10</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="11"><div class="map-game">GAME 11</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="12"><div class="map-game">GAME 12</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="13"><div class="map-game">GAME 13</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="14"><div class="map-game">GAME 14</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="15"><div class="map-game">GAME 15</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="16"><div class="map-game">GAME 16</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="17"><div class="map-game">GAME 17</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      <div class="map-cell" data-box="18"><div class="map-game">GAME 18</div><div class="map-thumb"><img class="map-img" alt=""><span class="map-name"></span><img class="map-winner" alt=""></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/logos.js"></script>
+<script src="js/osPt.js"></script>
+</body>
+</html>

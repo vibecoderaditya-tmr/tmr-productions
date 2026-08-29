@@ -1,0 +1,126 @@
+/* --- standard: shared root variables (osPt) --- */
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  width: 1920px; height: 1080px;
+  overflow: hidden; background: transparent;
+  font-family: var(--font-primary, 'Oswald', sans-serif);
+}
+
+:root {
+  /* --- osPt layout --- */
+  --osx-cols-w: 1820px;
+  --osx-cols-h: 505px;
+  --osx-col-gap: 20px;
+  --osx-hdr-h: 69px;
+  --osx-row-h: 69px;
+  --osx-gap-y: 10px;
+  --osx-x: 210px;
+  --osx-y: 110px;
+  --osx-rank-w: 82px;
+  --osx-team-w: 378px;
+  --osx-mp-w: 69px;
+  --osx-booyah-w: 69px;
+  --osx-elim-w: 100px;
+  --osx-place-w: 100px;
+  --osx-total-w: 100px;
+  --osx-pad-rank: 14px;
+  --osx-pad-mp: 14px;
+  --osx-pad-team: 14px;
+  --osx-pad-elim: 14px;
+  --osx-pad-place: 14px;
+  --osx-pad-total: 14px;
+  --osx-pad-booyah: 14px;
+  --osx-booyah: calc(var(--osx-hdr-h) - 10px);
+  --osx-name-x: 0px;
+  --osx-row-size: 28px;
+  --osx-hdr-size: 20px;
+  --osx-logo: calc(var(--osx-row-h) - 5px);
+  --osx-logo-gap: 11px;
+  --osx-hdr-bg: #1f2937;
+  --osx-hdr-text: #ffffff;
+  --osx-left-bg: #00499b;
+  --osx-left-text: #ffffff;
+  --osx-right-bg: #0f0f0f;
+  --osx-right-text: #ffffff;
+  --osx-border: 1px solid rgba(255,255,255,0.4);
+  --booyahHighlight: #ffd700;
+  --booyahText: #141414;
+
+  /* --- osPt animations --- */
+  --osx-anim-hdr-dur: 0.5s;
+  --osx-anim-row-start: 0.8;
+  --osx-anim-row-dur: 0.45s;
+  --osx-anim-row-stagger: 0.08s;
+  --osx-anim-text-dur: 0.35s;
+  --osx-anim-text-stagger: 0.08s;
+  --osx-anim-text-start: 0.8;
+  --osx-anim-hide-dur: 1s;
+  --osx-anim-hl-dur: 0.7s;
+  --osx-wcr-row-bg: #301E10;
+  --osx-wcr-row-text: #ffffff;
+
+  /* --- maps wrapper --- */
+  --maps-wrap-w: 1820px;
+  --maps-wrap-h: 365px;
+  --maps-gap: 10px;
+  --maps-box-w: 295px;
+  --maps-box-h: 115px;
+  --maps-game-size: 20px;
+  --maps-game-color: #ffffff;
+  --maps-game-bg: #000000;
+  --maps-name-bg: #000000;
+  --maps-name-color: #ffffff;
+  --maps-name-x: 20px;
+  --maps-game-w: 56px;
+  --maps-game-box-w: 56px;
+  --maps-game-gap: 0px;
+  --maps-name-size: 18px;
+  --maps-logo-size: 82px;
+  --maps-logo-y: 3px;
+  --maps-logo-x: 18px;
+  --maps-anim-sweep-delay: 0.5s;
+  --maps-anim-sweep-dur: 1.2s;
+  --maps-anim-name-delay: 0.15s;
+  --maps-anim-name-dur: 0.4s;
+  --osprm-top: 0px;
+  --one-row-w: 1020px;
+  --one-rank-w: 82px;
+  --one-team-w: 500px;
+  --one-mp-w: 69px;
+  --one-booyah-w: 69px;
+  --one-elim-w: 100px;
+  --one-place-w: 100px;
+  --one-total-w: 100px;
+  --one-maps-gap: 10px;
+  --one-maps-box-w: 290px;
+  --one-maps-box-h: 115px;
+}
+
+/* --- osPt page shell --- */
+.osPrm {
+  position: absolute;
+  inset: 0;
+  top: var(--osprm-top);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.osx-wrap {
+  position: relative;
+}
+
+/* --- osPt show/hide --- */
+.osx-wrap {
+  opacity: 0;
+}
+
+.osx-wrap.osx-showing {
+  opacity: 1;
+}
+
+.osx-wrap.osx-showing.osx-hide {
+  opacity: 0;
+  transition: opacity var(--osx-anim-hide-dur) ease;
+}

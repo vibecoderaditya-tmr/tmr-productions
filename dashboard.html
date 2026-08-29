@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TMR · Operator</title>
+<link rel="icon" href="img/icon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<link rel="stylesheet" href="css/dashboard/dashboard.css">
+<script src="js/dashboard.js"></script>
+</head>
+<body>
+
+<!-- PIN -->
+<div id="pin-screen">
+  <div class="pin-wordmark">TMR</div>
+  <div class="pin-rule"></div>
+  <div class="pin-tagline">Operator Access Panel</div>
+  <div class="pin-card">
+    <div class="pin-label">Enter PIN to continue</div>
+    <input id="pin-input" type="password" maxlength="8"
+           onkeydown="pinKeydown(event)" autofocus>
+    <button class="pin-btn" onclick="checkPin()">Authenticate</button>
+    <div id="pin-error"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main-screen">
+  <div class="header">
+    <div class="header-left">
+      <button class="panel-toggle" id="panel-toggle-btn" onclick="togglePanel()">&#9776;</button>
+      <div class="h-logo">TMR</div>
+      <div class="h-sep"></div>
+      <div class="h-sub">Tournament Match Reporter · Operator</div>
+    </div>
+    <div class="status-badge">
+      <div class="dot offline" id="status-dot"></div>
+      <span id="status-txt">STANDBY</span>
+    </div>
+  </div>
+
+  <div class="main-body">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel" id="left-panel">
+
+      <button class="panel-close-mobile ticker-btn" onclick="togglePanel()" style="margin-bottom:12px;">âœ• Close</button>
+
+      <div class="left-panel-section">
+        <div class="left-panel-label">Roster</div>
+        <button class="ticker-btn" id="btn-force-roster"
+                onclick="forceRoster()" disabled
+                style="width:100%;letter-spacing:2px;">
+          Force Roster
+        </button>
+        <div id="force-roster-status" style="font-size:10px;color:var(--text-low);letter-spacing:1px;min-height:14px;margin-top:4px;"></div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <div id="log-box"></div>
+      <div id="prompt-box"></div>
+
+      <div id="bottom-stats">
+        <div id="join-counter" style="display:none;font-size:11px;color:var(--text-mid);letter-spacing:1px;padding:4px 16px;">
+          <span id="join-count-val">0</span> players joined
+        </div>
+        <div id="winrate-panel">
+          <span class="wr-header">Win Rate · Final 4</span>
+          <div id="winrate-body">
+            <span class="wr-placeholder">Active when â‰¤ 4 teams remain</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-bar">
+        <div class="input-prefix">OPR</div>
+        <textarea id="op-input" rows="1"
+               placeholder="Waiting for promptâ€¦" disabled
+               onkeydown="inputKeydown(event)"></textarea>
+        <button id="send-btn" disabled onclick="sendReply()">Send</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
+
