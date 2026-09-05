@@ -108,9 +108,7 @@ function renderWinner(tag, rosters, totalKills, advanceCycle) {
   var sorted = [];
   var keys = Object.keys(rosters);
   keys.sort(function(a, b) {
-    var na = parseInt(a.match(/\d+$/)[0], 10) || 0;
-    var nb = parseInt(b.match(/\d+$/)[0], 10) || 0;
-    return na - nb;
+    return (rosters[b].kills || 0) - (rosters[a].kills || 0);
   });
 
   for (var i = 0; i < keys.length; i++) {
@@ -124,18 +122,18 @@ function renderWinner(tag, rosters, totalKills, advanceCycle) {
   var maxKills = 0, maxKnocks = 0;
   for (var i = 0; i < sorted.length; i++) {
     if (sorted[i].kills > maxKills) { maxKills = sorted[i].kills; maxKnocks = 0; }
-    if (sorted[i].kills === maxKills && sorted[i].knocks > maxKnocks) maxKnocks = sorted[i].knocks;
+    if (sorted[i].kills === maxKills && (sorted[i].knockDown || 0) > maxKnocks) maxKnocks = sorted[i].knockDown || 0;
   }
 
   var totalKnocks = 0;
-  for (var i = 0; i < sorted.length; i++) totalKnocks += sorted[i].knocks || 0;
+  for (var i = 0; i < sorted.length; i++) totalKnocks += sorted[i].knockDown || 0;
 
   for (var i = 0; i < sorted.length; i++) {
     var p = sorted[i];
     var shareKills  = totalKills > 0 ? (p.kills || 0) / totalKills : 0;
-    var shareKnocks = totalKnocks > 0 ? (p.knocks || 0) / totalKnocks : 0;
+    var shareKnocks = totalKnocks > 0 ? ((p.knockDown || 0) / totalKnocks) : 0;
     var contri = (shareKills * 70 + shareKnocks * 30).toFixed(2);
-    var isMvp = p.kills === maxKills && p.knocks >= maxKnocks && maxKills > 0;
+    var isMvp = p.kills === maxKills && (p.knockDown || 0) >= maxKnocks && maxKills > 0;
 
     var mvpBadge = isMvp ? '<div class="winner-mvp-badge"><span class="winner-mvp-text">MVP</span></div>' : '';
 
@@ -191,14 +189,14 @@ function renderWinner(tag, rosters, totalKills, advanceCycle) {
         for (var ci = 0; ci < cards.length; ci++) {
           (function(card, p, totalKills, totalKnocks) {
             var shareKills  = totalKills > 0 ? (p.kills || 0) / totalKills : 0;
-            var shareKnocks = totalKnocks > 0 ? (p.knocks || 0) / totalKnocks : 0;
+            var shareKnocks = totalKnocks > 0 ? ((p.knockDown || 0) / totalKnocks) : 0;
             var contri = (shareKills * 70 + shareKnocks * 30);
             var elimsSpan = card.querySelector('.winner-stat-col:first-child .winner-stat-value');
             var knocksSpan = card.querySelector('.winner-stat-col:last-child .winner-stat-value');
             var contriSpan = card.querySelector('.winner-contri-value');
             var contriFill = card.querySelector('.winner-contri-fill');
             if (elimsSpan) animateValue(elimsSpan, 0, p.kills || 0, 1200);
-            if (knocksSpan) animateValue(knocksSpan, 0, p.knocks || 0, 1200);
+            if (knocksSpan) animateValue(knocksSpan, 0, p.knockDown || 0, 1200);
             if (contriSpan) animateContri(contriSpan, 0, contri, 1200);
             if (contriFill) {
               contriFill.style.transition = 'width 1.2s ease-in-out';
@@ -229,13 +227,29 @@ db.ref('/matches').on('value', function(snap) {
   }
   if (matchKey && data[matchKey]) {
     var match = data[matchKey];
-    latestMatchData = match['4_BOOYAH'] || null;
-    gameEl.textContent = 'GAME ' + highestNum + ' - ' + (match['1_mapName'] || '');
+    var teamsNode = match.teams || {};
+    var wtag = null;
+    for (var t in teamsNode) {
+      if (teamsNode[t] && teamsNode[t].booyah === 1) { wtag = t; break; }
+    }
+    if (wtag) {
+      var wteam = teamsNode[wtag] || {};
+      var playersNode = wteam.players || {};
+      var rosters = {};
+      for (var uid in playersNode) {
+        var p = playersNode[uid];
+        rosters[uid] = { playerName: p.playerName || '', kills: p.kills || 0, knockDown: p.knockDown || 0 };
+      }
+      latestMatchData = { tag: wtag, rosters: rosters, totalKills: wteam.kills || 0 };
+    } else {
+      latestMatchData = null;
+    }
+    gameEl.textContent = 'GAME ' + highestNum + ' - ' + ((match.meta && match.meta.mapName) || '');
   }
 });
 
 var storedCrWidth = 0;
-db.ref('/matches/0_championRushPoints').on('value', function(snap) {
+db.ref('/matches/config/championRushPoints').on('value', function(snap) {
   var show = (parseInt(snap.val()) || 0) > 0;
   crEl.style.display = show ? 'inline-block' : 'none';
   if (show) {

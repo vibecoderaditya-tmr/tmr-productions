@@ -155,7 +155,7 @@ function checkChampRush() {
   if (!willCrReady || !thresholdReady || !teamsDataCache) return;
   Object.keys(teamsDataCache).forEach(function(tag) {
     var team = teamsDataCache[tag];
-    var pts = Number(team["5_totalPoints"]) || 0;
+    var pts = Number(team.totalScore) || 0;
     if (pts >= champRushThreshold) {
       if (willCrShown.indexOf(tag) === -1 && willCrQueue.indexOf(tag) === -1) {
         willCrQueue.push(tag);
@@ -182,13 +182,13 @@ db.ref("/live-graphics/cr/shownTeamsReset").on("value", function(snap) {
   }
 });
 
-db.ref("/matches/0_championRushPoints").on("value", function(snap) {
+db.ref("/matches/config/championRushPoints").on("value", function(snap) {
   champRushThreshold = parseInt(snap.val()) || 80;
   thresholdReady = true;
   checkChampRush();
 });
 
-db.ref("/matches/2_teams").on("value", function(snap) {
+db.ref("/matches/Overall/teams").on("value", function(snap) {
   teamsDataCache = snap.val() || {};
   checkChampRush();
 });

@@ -106,8 +106,8 @@ function animateCount(el, from, to) {
 function renderTicker() {
   const entries = Object.keys(teamsData || {}).map(tag => ({
     tag:  tag,
-    name: teamsData[tag]["1_teamName"] || tag,
-    pts:  Number(teamsData[tag]["5_totalPoints"]) || 0,
+    name: teamsData[tag].teamName || tag,
+    pts:  Number(teamsData[tag].totalScore) || 0,
   }));
   entries.sort((a, b) => b.pts - a.pts);
 
@@ -323,7 +323,7 @@ function revealCrowns() {
   rowsContainer.querySelectorAll('.crown-badge.bts').forEach(function(c) { c.classList.remove('bts'); });
 }
 
-db.ref("/matches/2_teams").on("value", snap => {
+db.ref("/matches/Overall/teams").on("value", snap => {
   teamsData = snap.val() || {};
   renderTicker();
 });

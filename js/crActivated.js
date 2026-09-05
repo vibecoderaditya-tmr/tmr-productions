@@ -220,7 +220,7 @@ crActDirRef.on("value", function(snap) {
 });
 
 var prevActTags = "";
-db.ref("/matches/2_teams").on("value", function(snap) {
+db.ref("/matches/Overall/teams").on("value", function(snap) {
   var data = snap.val() || {};
   var newList = [];
   Object.keys(data).forEach(function(key) {

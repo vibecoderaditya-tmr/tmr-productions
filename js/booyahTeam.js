@@ -14,6 +14,12 @@ var _pool = [];
 var _index = -1;
 var _booyahData = null;
 var _lastMatchKey = null;
+var _teamsCache = {};
+
+db.ref("/matches/Overall/teams").on("value", function(snap) {
+  _teamsCache = snap.val() || {};
+  if (_booyahData && _booyahData.tag) renderBooyah();
+});
 
 function shuffleArray(arr) {
   for (var i = arr.length - 1; i > 0; i--) {
@@ -56,7 +62,7 @@ function advanceImage() {
 function renderBooyah() {
   if (!_booyahData) return;
   var tag = _booyahData.tag || "";
-  var name = _booyahData.team || _booyahData.teamName || tag;
+  var name = (_teamsCache[tag] && _teamsCache[tag].teamName) || tag;
   var logo = document.getElementById("bt-logo");
   logo.style.display = "";
   loadLogo(logo, tag);
@@ -85,13 +91,20 @@ db.ref("/matches").on("value", function(snap) {
     var m = key.match(/^match(\d+)$/);
     if (m) { var n = parseInt(m[1], 10); if (n > highestNum) { highestNum = n; matchKey = key; } }
   }
-  if (matchKey && data[matchKey] && data[matchKey]["4_BOOYAH"]) {
-    _booyahData = data[matchKey]["4_BOOYAH"];
-    if (matchKey !== _lastMatchKey) {
-      _lastMatchKey = matchKey;
-      advanceImage();
+  if (matchKey && data[matchKey]) {
+    var teamsNode = data[matchKey].teams || {};
+    var wtag = null;
+    for (var t in teamsNode) {
+      if (teamsNode[t] && teamsNode[t].booyah === 1) { wtag = t; break; }
     }
-    renderBooyah();
+    if (wtag) {
+      _booyahData = { tag: wtag, team: wtag };
+      if (matchKey !== _lastMatchKey) {
+        _lastMatchKey = matchKey;
+        advanceImage();
+      }
+      renderBooyah();
+    }
   }
 });
 

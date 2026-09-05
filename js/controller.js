@@ -173,9 +173,9 @@ function osxEnsure(tag, name) {
 
 function osxApplyTeam(node, tag) {
   if (!node) return;
-  osxEnsure(tag, node["1_teamName"] || node["4_teamName"] || tag);
-  var k = Number(node["3_killPoints"]) || 0;
-  var p = Number(node["4_placePoints"]) || 0;
+  osxEnsure(tag, node.teamName || tag);
+  var k = Number(node.killPoints) || 0;
+  var p = Number(node.placementPoints) || 0;
   if (k) _osxTeams[tag].kills = k;
   if (p) _osxTeams[tag].place = p;
 }
@@ -206,7 +206,7 @@ function renderOsxRef() {
   refEl.innerHTML = html;
 }
 
-db.ref("/matches/2_teams").on("value", function(snap) {
+db.ref("/matches/Overall/teams").on("value", function(snap) {
   var td = snap.val() || {};
   for (var tag in td) {
     osxApplyTeam(td[tag], tag);
@@ -216,6 +216,7 @@ db.ref("/matches/2_teams").on("value", function(snap) {
 
 // --- perMatchPt data reference ---
 var _refTeams = {};
+var _refOverallTeams = {};
 var _refMatchKey = "";
 
 function refEnsure(tag, name) {
@@ -223,12 +224,11 @@ function refEnsure(tag, name) {
   else if (name && (!_refTeams[tag].name || _refTeams[tag].name === tag)) _refTeams[tag].name = name;
 }
 
-function refApplyMatch(node) {
-  if (!node || typeof node !== "object" || !node["1_teamTag"]) return;
-  var tag = node["1_teamTag"];
-  refEnsure(tag, node["4_teamName"] || node["1_teamName"] || tag);
-  var k = Number(node["5_totalKills"]) || Number(node["3_killPoints"]) || 0;
-  var p = Number(node["6_placementPoints"]) || Number(node["4_placePoints"]) || 0;
+function refApplyMatch(node, tag) {
+  if (!node || typeof node !== "object") return;
+  refEnsure(tag, tag);
+  var k = Number(node.kills) || Number(node.killPoints) || 0;
+  var p = Number(node.placementPoints) || 0;
   if (k) _refTeams[tag].kills = k;
   if (p) _refTeams[tag].place = p;
 }
@@ -272,17 +272,23 @@ db.ref("/matches").on("value", function(snap) {
   if (matchKey && data[matchKey]) {
     _refMatchKey = matchKey;
     _osxMatchNum = highestNum;
-    for (var key in data[matchKey]) refApplyMatch(data[matchKey][key]);
+    var teamsNode = data[matchKey].teams || {};
+    for (var tag in teamsNode) {
+      var name = (_refOverallTeams[tag] && _refOverallTeams[tag].teamName) || tag;
+      refEnsure(tag, name);
+      refApplyMatch(teamsNode[tag], tag);
+    }
     renderMatchRef();
     renderOsxRef();
   }
 });
 
-db.ref("/matches/2_teams").on("value", function(snap) {
+db.ref("/matches/Overall/teams").on("value", function(snap) {
   var td = snap.val() || {};
+  _refOverallTeams = td;
   for (var tag in td) {
     var n = td[tag];
-    refEnsure(tag, n && (n["1_teamName"] || n["4_teamName"]));
+    refEnsure(tag, n && n.teamName);
   }
   renderMatchRef();
 });
@@ -464,14 +470,16 @@ function exportToSheets() {
 
     var payload = [];
     matchKeys.forEach(function(mk) {
+      var matchNode = allMatches[mk];
+      var teamsNode = (matchNode && matchNode.teams) || {};
       var teams = [];
-      Object.keys(allMatches[mk]).forEach(function(key) {
-        var node = allMatches[mk][key];
-        if (typeof node !== "object" || !node || !node["1_teamTag"]) return;
-        teams.push({ hash: parseInt(node["0_hash"]) || 99, tag: node["1_teamTag"] || "", kills: parseInt(node["5_totalKills"]) || 0 });
+      Object.keys(teamsNode).forEach(function(tag) {
+        var node = teamsNode[tag];
+        if (typeof node !== "object" || !node) return;
+        teams.push({ rank: parseInt(node.rank) || 99, tag: tag, kills: parseInt(node.kills) || 0 });
       });
-      teams.sort(function(a, b) { return a.hash - b.hash; });
-      while (teams.length < 12) teams.push({ hash: "", tag: "", kills: "" });
+      teams.sort(function(a, b) { return a.rank - b.rank; });
+      while (teams.length < 12) teams.push({ rank: "", tag: "", kills: "" });
       payload.push({ match: mk, rows: teams });
     });
 

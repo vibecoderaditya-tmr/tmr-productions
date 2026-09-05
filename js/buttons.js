@@ -37,14 +37,16 @@ function exportToSheets() {
     if (!matchKeys.length) return;
     var payload = [];
     matchKeys.forEach(function(mk) {
+      var matchNode = allMatches[mk];
+      var teamsNode = (matchNode && matchNode.teams) || {};
       var teams = [];
-      Object.keys(allMatches[mk]).forEach(function(key) {
-        var node = allMatches[mk][key];
-        if (typeof node !== "object" || !node || !node["1_teamTag"]) return;
-        teams.push({ hash: parseInt(node["0_hash"]) || 99, tag: node["1_teamTag"] || "", kills: parseInt(node["5_totalKills"]) || 0 });
+      Object.keys(teamsNode).forEach(function(tag) {
+        var node = teamsNode[tag];
+        if (typeof node !== "object" || !node) return;
+        teams.push({ rank: parseInt(node.rank) || 99, tag: tag, kills: parseInt(node.kills) || 0 });
       });
-      teams.sort(function(a, b) { return a.hash - b.hash; });
-      while (teams.length < 12) teams.push({ hash: "", tag: "", kills: "" });
+      teams.sort(function(a, b) { return a.rank - b.rank; });
+      while (teams.length < 12) teams.push({ rank: "", tag: "", kills: "" });
       payload.push({ match: mk, rows: teams });
     });
     fetch(SHEETS_WEBAPP_URL, {
