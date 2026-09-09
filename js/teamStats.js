@@ -37,25 +37,10 @@ function setImage(cls, i, path) {
   if (imgs[i]) imgs[i].src = path;
 }
 
-function setSkillName(i, s, name) {
-  var els = document.querySelectorAll('.ts-skill-name');
-  var idx = i * 3 + (s - 1);
-  if (els[idx]) els[idx].textContent = name;
-}
-
-function setPetName(i, name) {
-  var els = document.querySelectorAll('.ts-pet-name');
-  if (els[i]) els[i].textContent = name;
-}
-
-function setLoadoutName(i, name) {
-  var els = document.querySelectorAll('.ts-loadout-name');
-  if (els[i]) els[i].textContent = name;
-}
-
-function setWeaponName(i, name) {
-  var els = document.querySelectorAll('.ts-weapon-name');
-  if (els[i]) els[i].textContent = name;
+function setStatValue(i, stat, value) {
+  var els = document.querySelectorAll('.ts-stat-value');
+  var idx = i * 4 + ['kills', 'assists', 'knockDown', 'damage'].indexOf(stat);
+  if (els[idx]) els[idx].textContent = value || 0;
 }
 
 function setOverlayName(i, name) {
@@ -72,7 +57,7 @@ function cleanWeapon(name) {
   return w.trim().toUpperCase();
 }
 
-db.ref("/matches").once("value", function(snap) {
+db.ref("/matches").on("value", function(snap) {
   var matches = snap.val();
   if (!matches) return;
 
@@ -114,29 +99,16 @@ db.ref("/matches").once("value", function(snap) {
   for (var idx = 0; idx < playerList.length && idx < 4; idx++) {
     var p = playerList[idx];
 
-    var s1 = p.passiveSkill1 || '';
-    var s2 = p.passiveSkill2 || '';
-    var s3 = p.passiveSkill3 || '';
-    var pet = p.petName || '';
-
-    if (s1) { setImage('ts-skill', idx * 3 + 0, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s1))) + '.webp'); setSkillName(idx, 1, cleanSkillName(s1)); }
-    if (s2) { setImage('ts-skill', idx * 3 + 1, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s2))) + '.webp'); setSkillName(idx, 2, cleanSkillName(s2)); }
-    if (s3) { setImage('ts-skill', idx * 3 + 2, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s3))) + '.webp'); setSkillName(idx, 3, cleanSkillName(s3)); }
-    if (pet) { setImage('ts-pet', idx, 'img/pets/' + escImg(pet) + '.webp'); setPetName(idx, pet); }
-    if (p.loadout) { setImage('ts-loadout', idx, 'img/loadouts/' + escImg(p.loadout) + '.webp'); setLoadoutName(idx, p.loadout); }
     var charName = String(p.activeSkill || '');
     charName = charName.replace(/\s+Chip$/i, '');
     var charImg = (charName === '-1') ? 'Primis' : charName;
     if (charImg) setImage('ts-char', idx, 'img/characters/' + escImg(charImg) + '.webp');
 
-    if (p.weapon && p.weapon.length) {
-      var best = p.weapon[0];
-      for (var w = 1; w < p.weapon.length; w++) {
-        if (p.weapon[w].kill > best.kill) best = p.weapon[w];
-        else if (p.weapon[w].kill === best.kill && p.weapon[w].damage > best.damage) best = p.weapon[w];
-      }
-      if (best.weapon) { setImage('ts-weapon', idx, 'img/weapons/' + escImg(cleanWeapon(best.weapon)) + '.webp'); setWeaponName(idx, cleanWeapon(best.weapon)); }
-    }
+    setStatValue(idx, 'kills', p.kills);
+    setStatValue(idx, 'assists', p.assists);
+    setStatValue(idx, 'knockDown', p.knockDown);
+    setStatValue(idx, 'damage', p.damage);
+
     if (p.playerName) setOverlayName(idx, p.playerName);
   }
 
@@ -152,9 +124,15 @@ db.ref("/live-graphics/theme/teamStats").on("value", function(snap) {
   if (!t) return;
   var root = document.documentElement;
   function _h(v) { return typeof v === "string" && v[0] === "#"; }
-  if (_h(t.leftBg))      root.style.setProperty("--ts-left-bg", t.leftBg);
-  if (_h(t.rightBg))     root.style.setProperty("--ts-right-bg", t.rightBg);
-  if (_h(t.borderColor)) root.style.setProperty("--ts-border-color", t.borderColor);
+  if (_h(t.leftBg))        root.style.setProperty("--ts-left-bg", t.leftBg);
+  if (_h(t.rightBg))       root.style.setProperty("--ts-right-bg", t.rightBg);
+  if (_h(t.borderColor))   root.style.setProperty("--ts-border-color", t.borderColor);
+  if (_h(t.statLabelColor)) root.style.setProperty("--ts-stat-label-color", t.statLabelColor);
+  if (_h(t.statValueColor)) root.style.setProperty("--ts-stat-value-color", t.statValueColor);
+  if (_h(t.overlayBg))     root.style.setProperty("--ts-overlay-bg", t.overlayBg);
+  if (_h(t.overlayColor))  root.style.setProperty("--ts-overlay-color", t.overlayColor);
+  if (_h(t.mvpBg))         root.style.setProperty("--ts-mvp-bg", t.mvpBg);
+  if (_h(t.mvpColor))      root.style.setProperty("--ts-mvp-color", t.mvpColor);
 });
 
 db.ref("/live-graphics/editor/teamStats").on("value", function(snap) {

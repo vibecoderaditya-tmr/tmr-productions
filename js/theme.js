@@ -21,6 +21,7 @@ var crActThemeRef = db.ref("/live-graphics/theme/crActivatedTeams");
 var perMptThemeRef = db.ref("/live-graphics/theme/perMatchPt");
 var osPtThemeRef   = db.ref("/live-graphics/theme/osPt");
 var gameInfoThemeRef = db.ref("/live-graphics/theme/gameInfo");
+var teamStatsThemeRef = db.ref("/live-graphics/theme/teamStats");
 
 var TICKER_KEYS = ["headerBg","headerText","headerBorder","logoBg","rowBg","rowText","rowBorder","barAlive","barDead","rankHeader","teamHeader","aliveHeader","elimsHeader","ptsHeader","rankTeamRow","aliveRow","rightRow","rankTeamBg","rightBg","endBg","curtainColor","topFragColor"];
 var ELIM_KEYS   = ["bgLeft","bgRight","leftHash","rightTeam","rightElim"];
@@ -33,6 +34,7 @@ var CRALERT_KEYS   = ["bodyBg","ribbonBg","ribbonTxt","mainTxt","logoBg"];
 var CRACT_KEYS     = ["hdrBg","hdrTxt","rowBgAct","rowTxt","logoBg"];
 var PERMPT_KEYS    = ["topBg","hdrBg","hdrText","leftBg","leftText","rightBg","rightText","booyahHighlight","booyahText"];
 var OSPT_KEYS      = ["hdrBg","hdrText","leftBg","leftText","rightBg","rightText","mapsGameBg","mapsGameText","mapsNameBg","mapsNameText","wcrRowBg","wcrRowText"];
+var TEAMSTATS_KEYS = ["leftBg","rightBg","borderColor","statLabelColor","statValueColor","overlayBg","overlayColor","mvpBg","mvpColor"];
 
 function isValidHex(str) {
   return /^#?[0-9a-fA-F]{6}$/.test(str.trim());
@@ -82,6 +84,7 @@ function scheduleWrite(prefix) {
     else if (prefix === "pmt") writePerMptTheme();
     else if (prefix === "osx") writeOsPtTheme();
     else if (prefix === "gi") writeGameInfoTheme();
+    else if (prefix === "tst") writeTeamStatsTheme();
     else writeWinnerTheme();
   }, 120);
 }
@@ -185,6 +188,15 @@ function writeGameInfoTheme() {
   gameInfoThemeRef.set(data);
 }
 
+function writeTeamStatsTheme() {
+  var data = {};
+  TEAMSTATS_KEYS.forEach(function(k) {
+    var el = document.getElementById("tst-" + k);
+    if (el) data[k] = el.value;
+  });
+  teamStatsThemeRef.set(data);
+}
+
 function loadThemeVals(ref, keys, prefix) {
   ref.once("value", function(snap) {
     var val = snap.val() || {};
@@ -212,6 +224,7 @@ loadThemeVals(crActThemeRef, CRACT_KEYS, "cract");
 loadThemeVals(perMptThemeRef, PERMPT_KEYS, "pmt");
 loadThemeVals(osPtThemeRef, OSPT_KEYS, "osx");
 loadThemeVals(gameInfoThemeRef, GAMEINFO_KEYS, "gi");
+loadThemeVals(teamStatsThemeRef, TEAMSTATS_KEYS, "tst");
 
 function copyHex(inputId, btn) {
   var el = document.getElementById(inputId);
