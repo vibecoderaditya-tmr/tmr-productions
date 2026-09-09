@@ -37,6 +37,27 @@ function setImage(cls, i, path) {
   if (imgs[i]) imgs[i].src = path;
 }
 
+function setSkillName(i, s, name) {
+  var els = document.querySelectorAll('.ts-skill-name');
+  var idx = i * 3 + (s - 1);
+  if (els[idx]) els[idx].textContent = name;
+}
+
+function setPetName(i, name) {
+  var els = document.querySelectorAll('.ts-pet-name');
+  if (els[i]) els[i].textContent = name;
+}
+
+function setLoadoutName(i, name) {
+  var els = document.querySelectorAll('.ts-loadout-name');
+  if (els[i]) els[i].textContent = name;
+}
+
+function setWeaponName(i, name) {
+  var els = document.querySelectorAll('.ts-weapon-name');
+  if (els[i]) els[i].textContent = name;
+}
+
 function setOverlayName(i, name) {
   var els = document.querySelectorAll('.ts-overlay');
   if (els[i]) els[i].textContent = name;
@@ -98,11 +119,11 @@ db.ref("/matches").once("value", function(snap) {
     var s3 = p.passiveSkill3 || '';
     var pet = p.petName || '';
 
-    if (s1) setImage('ts-skill', idx * 3 + 0, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s1))) + '.webp');
-    if (s2) setImage('ts-skill', idx * 3 + 1, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s2))) + '.webp');
-    if (s3) setImage('ts-skill', idx * 3 + 2, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s3))) + '.webp');
-    if (pet) setImage('ts-pet', idx, 'img/pets/' + escImg(pet) + '.webp');
-    if (p.loadout) setImage('ts-loadout', idx, 'img/loadouts/' + escImg(p.loadout) + '.webp');
+    if (s1) { setImage('ts-skill', idx * 3 + 0, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s1))) + '.webp'); setSkillName(idx, 1, cleanSkillName(s1)); }
+    if (s2) { setImage('ts-skill', idx * 3 + 1, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s2))) + '.webp'); setSkillName(idx, 2, cleanSkillName(s2)); }
+    if (s3) { setImage('ts-skill', idx * 3 + 2, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s3))) + '.webp'); setSkillName(idx, 3, cleanSkillName(s3)); }
+    if (pet) { setImage('ts-pet', idx, 'img/pets/' + escImg(pet) + '.webp'); setPetName(idx, pet); }
+    if (p.loadout) { setImage('ts-loadout', idx, 'img/loadouts/' + escImg(p.loadout) + '.webp'); setLoadoutName(idx, p.loadout); }
     var charName = String(p.activeSkill || '');
     charName = charName.replace(/\s+Chip$/i, '');
     var charImg = (charName === '-1') ? 'Primis' : charName;
@@ -114,7 +135,7 @@ db.ref("/matches").once("value", function(snap) {
         if (p.weapon[w].kill > best.kill) best = p.weapon[w];
         else if (p.weapon[w].kill === best.kill && p.weapon[w].damage > best.damage) best = p.weapon[w];
       }
-      if (best.weapon) setImage('ts-weapon', idx, 'img/weapons/' + escImg(cleanWeapon(best.weapon)) + '.webp');
+      if (best.weapon) { setImage('ts-weapon', idx, 'img/weapons/' + escImg(cleanWeapon(best.weapon)) + '.webp'); setWeaponName(idx, cleanWeapon(best.weapon)); }
     }
     if (p.playerName) setOverlayName(idx, p.playerName);
   }
