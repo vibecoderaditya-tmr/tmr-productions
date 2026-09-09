@@ -25,9 +25,21 @@ function skillImg(name) {
   return name;
 }
 
+function cleanSkillName(name) {
+  if (!name) return '';
+  var n = name.replace(/\s+Chip$/i, '');
+  n = n.replace(/'[^']*'/g, '');
+  return n.trim();
+}
+
 function setImage(cls, i, path) {
   var imgs = document.querySelectorAll('.' + cls);
   if (imgs[i]) imgs[i].src = path;
+}
+
+function setOverlayName(i, name) {
+  var els = document.querySelectorAll('.ts-overlay');
+  if (els[i]) els[i].textContent = name;
 }
 
 function cleanWeapon(name) {
@@ -60,21 +72,40 @@ db.ref("/matches").once("value", function(snap) {
   if (!rank1Tag || !teams[rank1Tag].players) return;
 
   var players = teams[rank1Tag].players;
-  var idx = 0;
+  var playerList = [];
   for (var uid in players) {
-    if (idx >= 4) break;
-    var p = players[uid];
+    playerList.push(players[uid]);
+  }
+
+  var mvpIdx = 0;
+  var mvpKills = -1;
+  var mvpDamage = -1;
+  for (var i = 0; i < playerList.length && i < 4; i++) {
+    var pk = playerList[i].kills || 0;
+    var pd = playerList[i].damage || 0;
+    if (pk > mvpKills || (pk === mvpKills && pd > mvpDamage)) {
+      mvpKills = pk;
+      mvpDamage = pd;
+      mvpIdx = i;
+    }
+  }
+
+  for (var idx = 0; idx < playerList.length && idx < 4; idx++) {
+    var p = playerList[idx];
 
     var s1 = p.passiveSkill1 || '';
     var s2 = p.passiveSkill2 || '';
     var s3 = p.passiveSkill3 || '';
     var pet = p.petName || '';
 
-    if (s1) setImage('ts-skill', idx * 3 + 0, 'img/charIcons/' + escImg(skillImg(s1)) + '.webp');
-    if (s2) setImage('ts-skill', idx * 3 + 1, 'img/charIcons/' + escImg(skillImg(s2)) + '.webp');
-    if (s3) setImage('ts-skill', idx * 3 + 2, 'img/charIcons/' + escImg(skillImg(s3)) + '.webp');
+    if (s1) setImage('ts-skill', idx * 3 + 0, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s1))) + '.webp');
+    if (s2) setImage('ts-skill', idx * 3 + 1, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s2))) + '.webp');
+    if (s3) setImage('ts-skill', idx * 3 + 2, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s3))) + '.webp');
     if (pet) setImage('ts-pet', idx, 'img/pets/' + escImg(pet) + '.webp');
-    var charImg = (p.activeSkill == '-1' || p.activeSkill === -1) ? 'Primis' : p.activeSkill;
+    if (p.loadout) setImage('ts-loadout', idx, 'img/loadouts/' + escImg(p.loadout) + '.webp');
+    var charName = String(p.activeSkill || '');
+    charName = charName.replace(/\s+Chip$/i, '');
+    var charImg = (charName === '-1') ? 'Primis' : charName;
     if (charImg) setImage('ts-char', idx, 'img/characters/' + escImg(charImg) + '.webp');
 
     if (p.weapon && p.weapon.length) {
@@ -85,8 +116,13 @@ db.ref("/matches").once("value", function(snap) {
       }
       if (best.weapon) setImage('ts-weapon', idx, 'img/weapons/' + escImg(cleanWeapon(best.weapon)) + '.webp');
     }
+    if (p.playerName) setOverlayName(idx, p.playerName);
+  }
 
-    idx++;
+  var mvpEls = document.querySelectorAll('.ts-mvp');
+  if (mvpEls[mvpIdx]) {
+    mvpEls[mvpIdx].textContent = 'MVP';
+    mvpEls[mvpIdx].classList.add('active');
   }
 });
 

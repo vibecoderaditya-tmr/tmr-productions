@@ -6,16 +6,22 @@ html, body {
 }
 
 :root {
-  --ts-left-w: 394px;
+  --ts-left-w: 180px;
   --ts-left-h: 320px;
-  --ts-right-w: 480px;
+  --ts-right-w: 350px;
   --ts-right-h: 320px;
   --ts-gap: 0px;
   --ts-border-radius: 14px;
   --ts-border-color: rgba(255,255,255,0.25);
   --ts-left-bg: #1a3a5c;
   --ts-right-bg: #5c1a2a;
-  --ts-box-bg: rgba(255,255,255,0.1);
+  --ts-row1-bg: #2a4a6b;
+  --ts-row2-bg: #4a6b2a;
+  --ts-row3-bg: #6b4a2a;
+  --ts-overlay-bg: #111;
+  --ts-overlay-color: #fff;
+  --ts-mvp-bg: #d4af37;
+  --ts-mvp-color: #000;
 }
 
 .ts-grid {
@@ -25,25 +31,65 @@ html, body {
   transform: translate(-50%, -50%);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 45px;
 }
 
 .ts-wrap {
   display: flex;
   align-items: stretch;
   gap: var(--ts-gap);
+  position: relative;
+}
+
+.ts-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: var(--ts-left-w);
+  height: 50px;
+  background: var(--ts-overlay-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ts-overlay-color);
+  font-size: 20px;
+  font-weight: 600;
+  padding: 4px 8px;
+  text-align: center;
+  overflow: hidden;
+  border-radius: 0 0 0 var(--ts-border-radius);
 }
 
 .ts-left {
   width: var(--ts-left-w);
   height: var(--ts-left-h);
   border: 1.5px solid var(--ts-border-color);
-  border-radius: var(--ts-border-radius);
+  border-right: none;
+  border-radius: var(--ts-border-radius) 0 0 var(--ts-border-radius);
   background: var(--ts-left-bg);
+  margin-right: -1.5px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  position: relative;
+}
+
+.ts-mvp {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--ts-mvp-bg);
+  color: var(--ts-mvp-color);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: none;
+}
+
+.ts-mvp.active {
+  display: block;
 }
 
 .ts-left img {
@@ -55,7 +101,8 @@ html, body {
   width: var(--ts-right-w);
   height: var(--ts-right-h);
   border: 1.5px solid var(--ts-border-color);
-  border-radius: var(--ts-border-radius);
+  border-left: none;
+  border-radius: 0 var(--ts-border-radius) var(--ts-border-radius) 0;
   background: var(--ts-right-bg);
   display: flex;
   flex-direction: column;
@@ -68,6 +115,7 @@ html, body {
 .ts-row {
   display: flex;
   gap: 10px;
+  justify-content: center;
 }
 
 .ts-box {
@@ -75,7 +123,6 @@ html, body {
   height: 90px;
   border: 1px solid var(--ts-border-color);
   border-radius: 8px;
-  background: var(--ts-box-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,6 +135,6 @@ html, body {
   object-fit: contain;
 }
 
-.ts-row:nth-child(1) .ts-box { }
-.ts-row:nth-child(2) .ts-box { }
-.ts-row:nth-child(3) .ts-box { width: 290px; height: 90px; }
+.ts-row:nth-child(1) .ts-box { background: var(--ts-row1-bg); }
+.ts-row:nth-child(2) .ts-box { flex: 1; background: var(--ts-row2-bg); }
+.ts-row:nth-child(3) .ts-box { width: 290px; height: 90px; background: var(--ts-row3-bg); }
