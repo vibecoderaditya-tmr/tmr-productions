@@ -34,7 +34,7 @@ var CRALERT_KEYS   = ["bodyBg","ribbonBg","ribbonTxt","mainTxt","logoBg"];
 var CRACT_KEYS     = ["hdrBg","hdrTxt","rowBgAct","rowTxt","logoBg"];
 var PERMPT_KEYS    = ["topBg","hdrBg","hdrText","leftBg","leftText","rightBg","rightText","booyahHighlight","booyahText"];
 var OSPT_KEYS      = ["hdrBg","hdrText","leftBg","leftText","rightBg","rightText","mapsGameBg","mapsGameText","mapsNameBg","mapsNameText","wcrRowBg","wcrRowText"];
-var TEAMSTATS_KEYS = ["leftBg","rightBg","borderColor","statLabelColor","statValueColor","overlayBg","overlayColor","mvpBg","mvpColor"];
+var TEAMSTATS_KEYS = ["leftBg","rightBg","borderColor","statLabelColor","statValueColor","overlayBg","overlayColor","mvpBg","mvpColor","row1Bg","row2Bg","row3Bg","skillOverlayBg","skillOverlayColor","petOverlayBg","petOverlayColor","loadoutOverlayBg","loadoutOverlayColor","weaponOverlayBg","weaponOverlayColor"];
 
 function isValidHex(str) {
   return /^#?[0-9a-fA-F]{6}$/.test(str.trim());
