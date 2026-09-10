@@ -239,9 +239,9 @@ body {
   }
 
   .pts-btns {
+    flex: 1;
     gap: 3px;
-    margin-left: auto;
   }
 
-  .pts-btn { width: 28px; flex: 1; max-height: 100%; font-size: 11px; }
+  .pts-btn { width: 28px; height: 100%; font-size: 11px; }
 }
