@@ -229,9 +229,9 @@ body {
   }
 
   .slot-team {
-    width: 20px;
-    min-width: 20px;
-    max-width: 20px;
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
     padding: 0 4px;
     font-size: var(--team-font);
     letter-spacing: 0;
