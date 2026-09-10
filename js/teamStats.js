@@ -148,8 +148,9 @@ db.ref("/matches").on("value", function(snap) {
   var teams = matches[maxKey].teams;
   var rank1Tag = null;
   for (var tag in teams) {
-    if (teams[tag].rank === 1) { rank1Tag = tag; break; }
+    if (Number(teams[tag].rank) === 1) { rank1Tag = tag; break; }
   }
+  console.log("[teamStats] latest:", maxKey, "rank1:", rank1Tag);
   if (!rank1Tag || !teams[rank1Tag].players) return;
 
   var players = teams[rank1Tag].players;
