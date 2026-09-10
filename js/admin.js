@@ -27,8 +27,14 @@ renderLivePanel();
 document.addEventListener("click", function(e) {
   var btn = e.target.closest(".pts-btn");
   if (!btn) return;
-  var slot = btn.dataset.slot;
-  var siblings = btn.parentElement.querySelectorAll(".pts-btn");
+  if (btn.dataset.adj) {
+    var input = btn.parentElement.querySelector(".pts-input");
+    if (!input) return;
+    var val = parseInt(input.value) || 0;
+    input.value = btn.dataset.adj === "+" ? val + 1 : Math.max(0, val - 1);
+    return;
+  }
+  var siblings = btn.parentElement.querySelectorAll(".pts-btn:not(.pts-wd):not(.pts-adj)");
   siblings.forEach(function(b) { b.classList.remove("active"); });
   btn.classList.add("active");
 });
@@ -56,9 +62,15 @@ function renderLivePanel() {
     var t = teams[i] || null;
     var tag = t ? (t.tag || "") : "";
     var ptsHtml = '<div class="pts-btns">';
+    ptsHtml += '<button class="pts-btn pts-wd" data-slot="' + (i+1) + '" data-pts="wd">W/D</button>';
     for (var p = 0; p <= 4; p++) {
       ptsHtml += '<button class="pts-btn" data-slot="' + (i+1) + '" data-pts="' + p + '">' + p + '</button>';
     }
+    ptsHtml += '<div class="pts-kills">';
+    ptsHtml += '<input class="pts-input" type="number" value="0" min="0" data-slot="' + (i+1) + '">';
+    ptsHtml += '<button class="pts-btn pts-adj" data-slot="' + (i+1) + '" data-adj="-">−</button>';
+    ptsHtml += '<button class="pts-btn pts-adj" data-slot="' + (i+1) + '" data-adj="+">+</button>';
+    ptsHtml += '</div>';
     ptsHtml += '</div>';
     row.innerHTML =
       '<div class="slot-num">' + (i + 1) + '</div>' +
@@ -87,9 +99,15 @@ function renderMatchPanels() {
           var assigned = mTeams[i - 1] || null;
           var tag = assigned ? assigned.tag || "" : "";
           var ptsHtml = '<div class="pts-btns">';
+          ptsHtml += '<button class="pts-btn pts-wd" data-slot="' + i + '" data-pts="wd">W/D</button>';
           for (var p = 0; p <= 4; p++) {
             ptsHtml += '<button class="pts-btn" data-slot="' + i + '" data-pts="' + p + '">' + p + '</button>';
           }
+          ptsHtml += '<div class="pts-kills">';
+          ptsHtml += '<input class="pts-input" type="number" value="0" min="0" data-slot="' + i + '">';
+          ptsHtml += '<button class="pts-btn pts-adj" data-slot="' + i + '" data-adj="-">−</button>';
+          ptsHtml += '<button class="pts-btn pts-adj" data-slot="' + i + '" data-adj="+">+</button>';
+          ptsHtml += '</div>';
           ptsHtml += '</div>';
           row.innerHTML =
             '<div class="slot-num">' + i + '</div>' +

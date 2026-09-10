@@ -158,6 +158,37 @@ body {
   color: #000;
 }
 
+.pts-wd {
+  background: rgba(255, 170, 0, 0.15);
+  color: #ffaa00;
+  font-size: 10px;
+  width: 36px;
+}
+
+.pts-kills {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  margin-left: 6px;
+}
+
+.pts-input {
+  width: 36px;
+  height: 28px;
+  background: #000;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+}
+
+.pts-adj {
+  width: 28px;
+}
+
 .copy-bar {
   padding: var(--copy-pad);
   background: var(--nav-bg);
