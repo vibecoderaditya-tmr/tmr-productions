@@ -11,7 +11,7 @@
   --btn-active-bg: #00e1ff;
   --panel-pad: 16px;
   --slot-width: 80px;
-  --team-width: 250px;
+  --team-width: 100px;
   --row-height: 38px;
   --row-radius: 6px;
   --row-gap: 4px;
@@ -86,12 +86,13 @@ body {
 
 .slot-header { width: var(--slot-width); }
 .team-header { width: var(--team-width); }
+.pts-header { width: 190px; }
 
 .panel-body {
   display: flex;
   flex-direction: column;
   gap: var(--row-gap);
-  width: calc(var(--slot-width) + var(--team-width));
+  width: calc(var(--slot-width) + var(--team-width) + 190px);
 }
 
 .slot-row {
@@ -128,6 +129,33 @@ body {
   letter-spacing: 0.5px;
   height: 100%;
   border-left: 1px solid #252530;
+}
+
+.pts-btns {
+  display: flex;
+  gap: 4px;
+  height: 100%;
+  align-items: center;
+}
+
+.pts-btn {
+  width: 32px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #888;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pts-btn.active {
+  background: var(--btn-active-bg);
+  color: #000;
 }
 
 .copy-bar {

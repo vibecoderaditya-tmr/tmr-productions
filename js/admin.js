@@ -46,11 +46,17 @@ function renderLivePanel() {
     row.className = "slot-row";
     var t = teams[i] || null;
     var tag = t ? (t.tag || "") : "";
+    var ptsHtml = '<div class="pts-btns">';
+    for (var p = 0; p <= 4; p++) {
+      ptsHtml += '<button class="pts-btn" data-slot="' + (i+1) + '" data-pts="' + p + '">' + p + '</button>';
+    }
+    ptsHtml += '</div>';
     row.innerHTML =
       '<div class="slot-num">' + (i + 1) + '</div>' +
       '<div class="slot-team">' +
         (tag || '<span style="color:#555">—</span>') +
-      '</div>';
+      '</div>' +
+      ptsHtml;
     body.appendChild(row);
   }
 }
@@ -71,11 +77,17 @@ function renderMatchPanels() {
           row.className = "slot-row";
           var assigned = mTeams[i - 1] || null;
           var tag = assigned ? assigned.tag || "" : "";
+          var ptsHtml = '<div class="pts-btns">';
+          for (var p = 0; p <= 4; p++) {
+            ptsHtml += '<button class="pts-btn" data-slot="' + i + '" data-pts="' + p + '">' + p + '</button>';
+          }
+          ptsHtml += '</div>';
           row.innerHTML =
             '<div class="slot-num">' + i + '</div>' +
             '<div class="slot-team">' +
               (tag || '<span style="color:#555">—</span>') +
-            '</div>';
+            '</div>' +
+            ptsHtml;
           body.appendChild(row);
         }
       });
