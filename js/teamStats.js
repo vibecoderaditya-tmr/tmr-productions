@@ -37,6 +37,27 @@ function setImage(cls, i, path) {
   if (imgs[i]) imgs[i].src = path;
 }
 
+function setSkillName(i, s, name) {
+  var els = document.querySelectorAll('.ts-skill-name');
+  var idx = i * 3 + (s - 1);
+  if (els[idx]) els[idx].textContent = name;
+}
+
+function setPetName(i, name) {
+  var els = document.querySelectorAll('.ts-pet-name');
+  if (els[i]) els[i].textContent = name;
+}
+
+function setLoadoutName(i, name) {
+  var els = document.querySelectorAll('.ts-loadout-name');
+  if (els[i]) els[i].textContent = name;
+}
+
+function setWeaponName(i, name) {
+  var els = document.querySelectorAll('.ts-weapon-name');
+  if (els[i]) els[i].textContent = name;
+}
+
 function setStatValue(i, stat, value) {
   var els = document.querySelectorAll('.ts-stat-value');
   var idx = i * 4 + ['kills', 'assists', 'knockDown', 'damage'].indexOf(stat);
@@ -46,6 +67,60 @@ function setStatValue(i, stat, value) {
 function setOverlayName(i, name) {
   var els = document.querySelectorAll('.ts-overlay');
   if (els[i]) els[i].textContent = name;
+}
+
+function animateWrapper(idx, delay) {
+  setTimeout(function() {
+    var wraps = document.querySelectorAll('.ts-wrap');
+    var wrap = wraps[idx];
+    if (!wrap) return;
+
+    var left = wrap.querySelector('.ts-left');
+    var char = wrap.querySelector('.ts-char');
+    var right = wrap.querySelector('.ts-right');
+    var overlay = wrap.querySelector('.ts-overlay');
+    var mvp = wrap.querySelector('.ts-mvp');
+    var rows = wrap.querySelectorAll('.ts-row');
+
+    left.classList.add('anim-in');
+
+    left.addEventListener('animationend', function handler() {
+      left.removeEventListener('animationend', handler);
+      char.classList.add('anim-in');
+
+      char.addEventListener('animationend', function handler2() {
+        char.removeEventListener('animationend', handler2);
+        right.classList.add('anim-in');
+
+        right.addEventListener('animationend', function handler3() {
+          right.removeEventListener('animationend', handler3);
+          overlay.classList.add('anim-in');
+
+          overlay.addEventListener('animationend', function handler4() {
+            overlay.removeEventListener('animationend', handler4);
+            if (mvp) mvp.classList.add('anim-in');
+
+            function animateRow(rowIdx) {
+              if (rowIdx >= rows.length) return;
+              rows[rowIdx].classList.add('anim-in');
+              rows[rowIdx].addEventListener('animationend', function handlerR() {
+                rows[rowIdx].removeEventListener('animationend', handlerR);
+                animateRow(rowIdx + 1);
+              });
+            }
+            animateRow(0);
+          });
+        });
+      });
+    });
+  }, delay);
+}
+
+function animateMvp(delay) {
+  setTimeout(function() {
+    var mvpEl = document.querySelector('.ts-mvp.active');
+    if (mvpEl) mvpEl.classList.add('anim-in');
+  }, delay);
 }
 
 function cleanWeapon(name) {
@@ -104,6 +179,26 @@ db.ref("/matches").on("value", function(snap) {
     var charImg = (charName === '-1') ? 'Primis' : charName;
     if (charImg) setImage('ts-char', idx, 'img/characters/' + escImg(charImg) + '.webp');
 
+    var s1 = p.passiveSkill1 || '';
+    var s2 = p.passiveSkill2 || '';
+    var s3 = p.passiveSkill3 || '';
+    var pet = p.petName || '';
+
+    if (s1) { setImage('ts-skill', idx * 3 + 0, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s1))) + '.webp'); setSkillName(idx, 1, cleanSkillName(s1)); }
+    if (s2) { setImage('ts-skill', idx * 3 + 1, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s2))) + '.webp'); setSkillName(idx, 2, cleanSkillName(s2)); }
+    if (s3) { setImage('ts-skill', idx * 3 + 2, 'img/charIcons/' + escImg(skillImg(cleanSkillName(s3))) + '.webp'); setSkillName(idx, 3, cleanSkillName(s3)); }
+    if (pet) { setImage('ts-pet', idx, 'img/pets/' + escImg(pet) + '.webp'); setPetName(idx, pet); }
+    if (p.loadout) { setImage('ts-loadout', idx, 'img/loadouts/' + escImg(p.loadout) + '.webp'); setLoadoutName(idx, p.loadout); }
+
+    if (p.weapon && p.weapon.length) {
+      var best = p.weapon[0];
+      for (var w = 1; w < p.weapon.length; w++) {
+        if (p.weapon[w].kill > best.kill) best = p.weapon[w];
+        else if (p.weapon[w].kill === best.kill && p.weapon[w].damage > best.damage) best = p.weapon[w];
+      }
+      if (best.weapon) { setImage('ts-weapon', idx, 'img/weapons/' + escImg(cleanWeapon(best.weapon)) + '.webp'); setWeaponName(idx, cleanWeapon(best.weapon)); }
+    }
+
     setStatValue(idx, 'kills', p.kills);
     setStatValue(idx, 'assists', p.assists);
     setStatValue(idx, 'knockDown', p.knockDown);
@@ -116,6 +211,54 @@ db.ref("/matches").on("value", function(snap) {
   if (mvpEls[mvpIdx]) {
     mvpEls[mvpIdx].textContent = 'MVP';
     mvpEls[mvpIdx].classList.add('active');
+  }
+});
+
+function resetAnimations() {
+  var wraps = document.querySelectorAll('.ts-wrap');
+  wraps.forEach(function(w) { w.classList.add('fade-out'); });
+  setTimeout(function() {
+    var els = document.querySelectorAll('.ts-left, .ts-char, .ts-right, .ts-overlay, .ts-mvp.active, .ts-row');
+    els.forEach(function(el) { el.classList.remove('anim-in'); });
+  }, 400);
+}
+
+function playAnimation() {
+  var wraps = document.querySelectorAll('.ts-wrap');
+  wraps.forEach(function(w) { w.classList.remove('fade-out'); });
+  var els = document.querySelectorAll('.ts-left, .ts-char, .ts-right, .ts-overlay, .ts-mvp.active, .ts-row');
+  els.forEach(function(el) { el.classList.remove('anim-in'); });
+  setTimeout(function() {
+    animateWrapper(0, 0);
+    animateWrapper(1, 0);
+    animateWrapper(2, 0);
+    animateWrapper(3, 0);
+  }, 50);
+}
+
+db.ref("/live-graphics/teamStats").on("value", function(snap) {
+  var val = snap.val();
+  if (val === "show") {
+    playAnimation();
+  } else if (val === "hide") {
+    resetAnimations();
+  }
+});
+
+db.ref("/live-graphics/teamStatsPage").on("value", function(snap) {
+  var page = snap.val() || 1;
+  var rowClips = document.querySelectorAll('.ts-row-clip');
+  var statsEls = document.querySelectorAll('.ts-stats');
+  if (page === 2) {
+    rowClips.forEach(function(el) { el.classList.add('hidden'); });
+    setTimeout(function() {
+      statsEls.forEach(function(el) { el.classList.add('visible'); });
+    }, 300);
+  } else {
+    statsEls.forEach(function(el) { el.classList.remove('visible'); });
+    setTimeout(function() {
+      rowClips.forEach(function(el) { el.classList.remove('hidden'); });
+    }, 300);
   }
 });
 
@@ -133,6 +276,17 @@ db.ref("/live-graphics/theme/teamStats").on("value", function(snap) {
   if (_h(t.overlayColor))  root.style.setProperty("--ts-overlay-color", t.overlayColor);
   if (_h(t.mvpBg))         root.style.setProperty("--ts-mvp-bg", t.mvpBg);
   if (_h(t.mvpColor))      root.style.setProperty("--ts-mvp-color", t.mvpColor);
+  if (_h(t.row1Bg))        root.style.setProperty("--ts-row1-bg", t.row1Bg);
+  if (_h(t.row2Bg))        root.style.setProperty("--ts-row2-bg", t.row2Bg);
+  if (_h(t.row3Bg))        root.style.setProperty("--ts-row3-bg", t.row3Bg);
+  if (_h(t.skillOverlayBg))    root.style.setProperty("--ts-skill-overlay-bg", t.skillOverlayBg);
+  if (_h(t.skillOverlayColor)) root.style.setProperty("--ts-skill-overlay-color", t.skillOverlayColor);
+  if (_h(t.petOverlayBg))      root.style.setProperty("--ts-pet-overlay-bg", t.petOverlayBg);
+  if (_h(t.petOverlayColor))   root.style.setProperty("--ts-pet-overlay-color", t.petOverlayColor);
+  if (_h(t.loadoutOverlayBg))    root.style.setProperty("--ts-loadout-overlay-bg", t.loadoutOverlayBg);
+  if (_h(t.loadoutOverlayColor)) root.style.setProperty("--ts-loadout-overlay-color", t.loadoutOverlayColor);
+  if (_h(t.weaponOverlayBg))    root.style.setProperty("--ts-weapon-overlay-bg", t.weaponOverlayBg);
+  if (_h(t.weaponOverlayColor)) root.style.setProperty("--ts-weapon-overlay-color", t.weaponOverlayColor);
 });
 
 db.ref("/live-graphics/editor/teamStats").on("value", function(snap) {

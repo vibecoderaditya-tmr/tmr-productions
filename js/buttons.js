@@ -23,6 +23,7 @@ var ACTIONS = {
   teamElim_IN:           { label: "Team Elim",  sub: "IN",          pulse: lgRef.child("teamEliminatedCommand"), send: "in" },
   crAlert_IN:            { label: "CR Alert",   sub: "IN",          pulse: lgRef.child("cr").child("alertCmd"), send: "in" },
   winner_SHOW:           { label: "Winner",     sub: "SHOW / HIDE", toggle: lgRef.child("winner"), on: "show",             off: "hide" },
+  teamStats_SHOW_HIDE:   { label: "Team Stats", sub: "SHOW / HIDE", toggle: lgRef.child("teamStats"), on: "show",           off: "hide" },
   exportToSheets:        { label: "Export",     sub: "SHEETS",      fn: exportToSheets }
 };
 

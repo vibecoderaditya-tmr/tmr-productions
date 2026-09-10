@@ -138,6 +138,27 @@ function toggleOsPt() {
 }
 window.toggleOsPt = toggleOsPt;
 
+var teamStatsState = "hide";
+
+function toggleTeamStats() {
+  var next = teamStatsState === "show" ? "hide" : "show";
+  lgRef.child("teamStats").set(next);
+  teamStatsState = next;
+  var btn = document.getElementById("btn-teamstats-toggle");
+  if (btn) btn.textContent = teamStatsState === "show" ? "HIDE" : "SHOW";
+}
+window.toggleTeamStats = toggleTeamStats;
+
+var teamStatsPage = 1;
+
+function toggleTeamStatsPage() {
+  teamStatsPage = teamStatsPage === 1 ? 2 : 1;
+  lgRef.child("teamStatsPage").set(teamStatsPage);
+  var btn = document.getElementById("btn-teamstats-page");
+  if (btn) btn.textContent = teamStatsPage === 1 ? "PAGE 2" : "PAGE 1";
+}
+window.toggleTeamStatsPage = toggleTeamStatsPage;
+
 function setMapsRows(n) {
   lgRef.child("mapsRows").set(Number(n) || 3);
 }
@@ -400,6 +421,12 @@ lgRef.on("value", function(snap) {
   osxState = val["osPt"] || "hide";
   var oBtn = document.getElementById("btn-ospt-toggle");
   if (oBtn) oBtn.textContent = osxState === "show" ? "HIDE" : "SHOW";
+  teamStatsState = val["teamStats"] || "hide";
+  var tsBtn = document.getElementById("btn-teamstats-toggle");
+  if (tsBtn) tsBtn.textContent = teamStatsState === "show" ? "HIDE" : "SHOW";
+  teamStatsPage = val["teamStatsPage"] || 1;
+  var tsPageBtn = document.getElementById("btn-teamstats-page");
+  if (tsPageBtn) tsPageBtn.textContent = teamStatsPage === 1 ? "PAGE 2" : "PAGE 1";
 });
 
 var ptsVisRef = db.ref("/live-graphics/status");
