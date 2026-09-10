@@ -46,11 +46,10 @@ function renderLivePanel() {
     row.className = "slot-row";
     var t = teams[i] || null;
     var tag = t ? (t.tag || "") : "";
-    var teamName = t ? (t.teamName || "") : "";
     row.innerHTML =
       '<div class="slot-num">' + (i + 1) + '</div>' +
       '<div class="slot-team">' +
-        (teamName || '<span style="color:#555">—</span>') +
+        (tag || '<span style="color:#555">—</span>') +
       '</div>';
     body.appendChild(row);
   }
@@ -71,12 +70,11 @@ function renderMatchPanels() {
           var row = document.createElement("div");
           row.className = "slot-row";
           var assigned = mTeams[i - 1] || null;
-          var teamName = assigned ? assigned.teamName || "" : "";
           var tag = assigned ? assigned.tag || "" : "";
           row.innerHTML =
             '<div class="slot-num">' + i + '</div>' +
             '<div class="slot-team">' +
-              (teamName || '<span style="color:#555">—</span>') +
+              (tag || '<span style="color:#555">—</span>') +
             '</div>';
           body.appendChild(row);
         }

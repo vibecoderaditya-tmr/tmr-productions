@@ -23,11 +23,14 @@
   --copy-btn-radius: 6px;
 }
 
+html, body {
+  height: 100%;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #0a0a0f;
   color: #fff;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -50,7 +53,6 @@ body {
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s;
 }
 
 .nav-btn:hover { background: #252530; color: #ccc; }
@@ -63,6 +65,7 @@ body {
 .admin-panel {
   flex: 1;
   padding: var(--panel-pad);
+  overflow-y: auto;
 }
 
 .match-panel.hidden { display: none; }
@@ -119,7 +122,10 @@ body {
   align-items: center;
   padding: 0 12px;
   font-size: var(--team-font);
-  color: #ccc;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   height: 100%;
   border-left: 1px solid #252530;
 }
@@ -139,8 +145,21 @@ body {
   font-weight: 800;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s;
 }
 
-.copy-btn:hover { background: #33ebff; transform: translateY(-1px); }
-.copy-btn:active { transform: translateY(0); }
+.copy-btn:hover { background: #33ebff; }
+
+@media (max-width: 600px) {
+  :root {
+    --slot-width: 40px;
+    --team-width: 150px;
+    --row-height: 34px;
+    --slot-font: 12px;
+    --team-font: 11px;
+    --btn-pad: 6px 12px;
+    --btn-active-bg: #00e1ff;
+  }
+
+  .nav-btn { font-size: 11px; }
+  .copy-btn { font-size: 12px; padding: 8px 16px; }
+}
