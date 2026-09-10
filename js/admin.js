@@ -68,7 +68,7 @@ function renderLivePanel() {
       ptsHtml += '<button class="pts-btn" data-slot="' + (i+1) + '" data-pts="' + p + '">' + p + '</button>';
     }
     ptsHtml += '<div class="pts-kills">';
-    ptsHtml += '<input class="pts-input" type="number" value="0" min="0" data-slot="' + (i+1) + '">';
+    ptsHtml += '<input class="pts-input" type="number" value="0" min="0" data-slot="' + (i+1) + '" readonly>';
     ptsHtml += '<button class="pts-btn pts-adj" data-slot="' + (i+1) + '" data-adj="-">−</button>';
     ptsHtml += '<button class="pts-btn pts-adj" data-slot="' + (i+1) + '" data-adj="+">+</button>';
     ptsHtml += '</div>';
@@ -105,7 +105,7 @@ function renderMatchPanels() {
             ptsHtml += '<button class="pts-btn" data-slot="' + i + '" data-pts="' + p + '">' + p + '</button>';
           }
           ptsHtml += '<div class="pts-kills">';
-          ptsHtml += '<input class="pts-input" type="number" value="0" min="0" data-slot="' + i + '">';
+          ptsHtml += '<input class="pts-input" type="number" value="0" min="0" data-slot="' + i + '" readonly>';
           ptsHtml += '<button class="pts-btn pts-adj" data-slot="' + i + '" data-adj="-">−</button>';
           ptsHtml += '<button class="pts-btn pts-adj" data-slot="' + i + '" data-adj="+">+</button>';
           ptsHtml += '</div>';
