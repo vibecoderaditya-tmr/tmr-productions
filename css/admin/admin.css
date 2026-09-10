@@ -187,10 +187,37 @@ body {
     --btn-pad: 6px 12px;
   }
 
-  html, body { height: 100%; width: 100%; }
+  html, body { height: 100%; width: 100%; overflow: hidden; }
 
   .admin-nav { padding: 8px 10px; }
   .nav-btn { font-size: 11px; padding: 6px 10px; }
   .copy-btn { font-size: 12px; padding: 8px 16px; }
   .pts-btn { width: 26px; height: 24px; font-size: 11px; }
+
+  .admin-panel { padding: 10px; }
+
+  .panel-body {
+    width: 100%;
+  }
+
+  .panel-header {
+    padding: 0 4px;
+  }
+
+  .slot-header { width: var(--slot-width); }
+  .team-header { width: var(--team-width); }
+  .pts-header { width: 160px; }
+
+  .team-row {
+    padding: 0 8px;
+  }
+
+  .slot-team {
+    padding: 0 6px;
+    font-size: 10px;
+    letter-spacing: 0;
+  }
+
+  .pts-btns { gap: 2px; }
+  .pts-btn { width: 24px; height: 22px; font-size: 10px; }
 }
