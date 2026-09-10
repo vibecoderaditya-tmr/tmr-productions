@@ -34,7 +34,8 @@ document.addEventListener("click", function(e) {
     input.value = btn.dataset.adj === "+" ? val + 1 : Math.max(0, val - 1);
     return;
   }
-  var siblings = btn.parentElement.querySelectorAll(".pts-btn:not(.pts-wd):not(.pts-adj)");
+  var ptsBtns = btn.closest(".pts-btns");
+  var siblings = ptsBtns.querySelectorAll(".pts-btn:not(.pts-adj)");
   siblings.forEach(function(b) { b.classList.remove("active"); });
   btn.classList.add("active");
 });
