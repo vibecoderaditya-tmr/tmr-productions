@@ -22,7 +22,16 @@ configRef.on("value", function(snap) {
   var val = snap.val();
   if (!val) return;
   teams = Array.isArray(val) ? val : Object.values(val);
-  renderLivePanel();
+renderLivePanel();
+
+document.addEventListener("click", function(e) {
+  var btn = e.target.closest(".pts-btn");
+  if (!btn) return;
+  var slot = btn.dataset.slot;
+  var siblings = btn.parentElement.querySelectorAll(".pts-btn");
+  siblings.forEach(function(b) { b.classList.remove("active"); });
+  btn.classList.add("active");
+});
   renderMatchPanels();
 });
 

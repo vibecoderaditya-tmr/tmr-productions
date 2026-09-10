@@ -180,14 +180,17 @@ body {
 @media (max-width: 600px) {
   :root {
     --slot-width: 40px;
-    --team-width: 150px;
+    --team-width: 70px;
     --row-height: 34px;
     --slot-font: 12px;
     --team-font: 11px;
     --btn-pad: 6px 12px;
-    --btn-active-bg: #00e1ff;
   }
 
-  .nav-btn { font-size: 11px; }
+  html, body { height: 100%; width: 100%; }
+
+  .admin-nav { padding: 8px 10px; }
+  .nav-btn { font-size: 11px; padding: 6px 10px; }
   .copy-btn { font-size: 12px; padding: 8px 16px; }
+  .pts-btn { width: 26px; height: 24px; font-size: 11px; }
 }
