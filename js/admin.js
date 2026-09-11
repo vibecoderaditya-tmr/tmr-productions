@@ -146,7 +146,7 @@ function addMatchTab(num) {
   panel.id = "match-" + num + "-panel";
   panel.innerHTML =
     '<div class="panel-header">' +
-      '<div class="slot-header">SLOT</div>' +
+      '<div class="slot-header">#</div>' +
       '<div class="team-header">TEAMS</div>' +
     '</div>' +
     '<div class="panel-body" id="match-' + num + '-body"></div>';
