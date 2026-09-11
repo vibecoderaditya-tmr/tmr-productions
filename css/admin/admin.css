@@ -193,7 +193,23 @@ body {
   padding: var(--copy-pad);
   background: var(--nav-bg);
   border-top: 2px solid var(--nav-border);
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
+
+.start-btn {
+  padding: var(--copy-btn-pad);
+  border: none;
+  border-radius: var(--copy-btn-radius);
+  background: #22c55e;
+  color: #000;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.start-btn:hover { background: #34d399; }
 
 .copy-btn {
   padding: var(--copy-btn-pad);
