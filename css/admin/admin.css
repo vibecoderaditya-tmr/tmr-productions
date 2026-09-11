@@ -199,30 +199,34 @@ body {
 }
 
 .start-btn {
-  padding: var(--copy-btn-pad);
+  padding: 10px 28px;
   border: none;
-  border-radius: var(--copy-btn-radius);
-  background: #22c55e;
-  color: #000;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
 }
 
-.start-btn:hover { background: #34d399; }
+.start-btn:hover { background: linear-gradient(135deg, #34d399, #22c55e); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4); }
 
 .copy-btn {
-  padding: var(--copy-btn-pad);
+  padding: 10px 28px;
   border: none;
-  border-radius: var(--copy-btn-radius);
-  background: var(--btn-active-bg);
-  color: #000;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
-.copy-btn:hover { background: #33ebff; }
+.copy-btn:hover { background: linear-gradient(135deg, #60a5fa, #3b82f6); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
 
 @media (max-width: 600px) {
   :root {
