@@ -335,3 +335,9 @@ joinCountRef.on("value", function(snap) {
     st.textContent        = "";
   }
 });
+
+function removeCasterNames() {
+  db.ref("/live-graphics/caster1/casterName").remove();
+  db.ref("/live-graphics/caster2/casterName").remove();
+  addLog("Caster names removed", "bot");
+}
