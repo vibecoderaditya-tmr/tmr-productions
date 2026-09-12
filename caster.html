@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>TMR · Caster</title>
+<link rel="icon" href="img/icon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<link rel="stylesheet" href="css/caster/caster.css">
+</head>
+<body>
+
+<div class="caster-wrap">
+
+  <div class="caster-top">
+    <div class="caster-badge">
+      <div class="caster-dot"></div>
+      <span>LIVE</span>
+    </div>
+    <div class="caster-logo">TM<em>R</em></div>
+    <div class="caster-sub">Caster Deck</div>
+  </div>
+
+  <div class="caster-cards">
+
+    <div class="caster-card" id="card-caster1" onclick="selectCaster(1)">
+      <div class="caster-card-num">01</div>
+      <div class="caster-card-label">CASTER</div>
+      <div class="caster-card-side">LEFT SIDE</div>
+      <div class="caster-card-indicator"></div>
+    </div>
+
+    <div class="caster-card" id="card-caster2" onclick="selectCaster(2)">
+      <div class="caster-card-num">02</div>
+      <div class="caster-card-label">CASTER</div>
+      <div class="caster-card-side">RIGHT SIDE</div>
+      <div class="caster-card-indicator"></div>
+    </div>
+
+  </div>
+
+  <div class="caster-note">
+    Tap the card that matches your position on the caster desk
+  </div>
+
+</div>
+
+<script src="js/caster.js"></script>
+</body>
+</html>

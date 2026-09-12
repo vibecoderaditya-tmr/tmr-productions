@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>TMR · Caster 2</title>
+<link rel="icon" href="img/icon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<link rel="stylesheet" href="css/caster2/caster2.css">
+</head>
+<body>
+
+<div class="caster-wrap">
+  <div class="caster-top">
+    <div class="caster-badge">
+      <div class="caster-dot"></div>
+      <span>LIVE</span>
+    </div>
+    <div class="caster-logo">TM<em>R</em></div>
+    <div class="caster-sub">Caster 2</div>
+  </div>
+
+  <div class="caster-nav-row">
+    <div class="match-nav">
+      <button class="nav-arrow" id="nav-left" onclick="scrollMatches(-1)">◀</button>
+      <div class="match-btns" id="match-btns">
+        <button class="match-btn active" data-match="M1" onclick="selectMatch(this)">M1</button>
+        <button class="match-btn" data-match="M2" onclick="selectMatch(this)">M2</button>
+        <button class="match-btn" data-match="M3" onclick="selectMatch(this)">M3</button>
+        <button class="match-btn" data-match="M4" onclick="selectMatch(this)">M4</button>
+        <button class="match-btn" data-match="M5" onclick="selectMatch(this)">M5</button>
+        <button class="match-btn" data-match="M6" onclick="selectMatch(this)">M6</button>
+        <button class="match-btn" data-match="M7" onclick="selectMatch(this)">M7</button>
+        <button class="match-btn" data-match="M8" onclick="selectMatch(this)">M8</button>
+        <button class="match-btn" data-match="M9" onclick="selectMatch(this)">M9</button>
+        <button class="match-btn" data-match="M10" onclick="selectMatch(this)">M10</button>
+      </div>
+      <button class="nav-arrow" id="nav-right" onclick="scrollMatches(1)">▶</button>
+    </div>
+    <button class="reset-btn" onclick="resetChoices()">RESET</button>
+    <button class="save-btn" onclick="saveChoices()">SAVE CHOICES</button>
+  </div>
+
+  <div class="caster-content" id="caster-content">
+    <!-- content here -->
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="name-modal" id="name-modal">
+    <div class="name-modal-box">
+      <div class="name-modal-title">ENTER YOUR NAME</div>
+      <input type="text" class="name-input" id="name-input" placeholder="Type your name..." maxlength="20">
+      <button class="name-submit" id="name-submit">CONFIRM</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/caster2.js"></script>
+</body>
+</html>

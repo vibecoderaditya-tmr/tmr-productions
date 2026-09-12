@@ -10,7 +10,16 @@
 </head>
 <body>
 
-<div class="wrapper">
+<div class="passcode-modal" id="passcode-modal">
+  <div class="passcode-box">
+    <div class="passcode-title">ENTER PASSCODE</div>
+    <input type="password" class="passcode-input" id="passcode-input" placeholder="· · · ·" maxlength="4">
+    <button class="passcode-submit" id="passcode-submit">UNLOCK</button>
+    <div class="passcode-error" id="passcode-error"></div>
+  </div>
+</div>
+
+<div class="wrapper" id="main-content" style="display:none;">
 
   <div class="header">
     <div class="header-tag">TMR Esports // Control Hub</div>
@@ -34,14 +43,7 @@
       </div>
     </a>
 
-    <a class="nav-card" href="admin.html">
-      <div class="card-icon">⚙️</div>
-      <div>
-        <div class="card-label">Tool 00B</div>
-        <div class="card-title">Team <span>Admin</span></div>
-      </div>
-      <div class="card-desc">Manage team slots &amp;<br>copy to match config</div>
-    </a>
+
 
     <a class="nav-card" href="controller.html">
       <div class="card-icon">🎮</div>
@@ -201,6 +203,26 @@
   <div class="footer">TMR Esports &nbsp;·&nbsp; Live Graphics Suite</div>
 
 </div>
+
+<script>
+var OPERATOR_PIN = "6558";
+
+document.getElementById("passcode-submit").onclick = function() {
+  var val = document.getElementById("passcode-input").value.trim();
+  if (val === OPERATOR_PIN) {
+    document.getElementById("passcode-modal").style.display = "none";
+    document.getElementById("main-content").style.display = "";
+  } else {
+    document.getElementById("passcode-error").textContent = "Wrong passcode";
+    document.getElementById("passcode-input").value = "";
+    document.getElementById("passcode-input").focus();
+  }
+};
+
+document.getElementById("passcode-input").onkeydown = function(e) {
+  if (e.key === "Enter") document.getElementById("passcode-submit").click();
+};
+</script>
 
 </body>
 </html>
