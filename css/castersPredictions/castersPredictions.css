@@ -23,24 +23,19 @@ body {
   height: 1080px;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: var(--cp-y-offset, 200px);
+}
+
+.cp-box-wrapper {
+  display: flex;
+  gap: 20px;
 }
 
 .cp-box {
-  position: absolute;
-  bottom: 40px;
   width: 500px;
-}
-
-.cp-box-left {
-  left: 50%;
-  transform: translateX(-100%);
-  margin-left: -20px;
-}
-
-.cp-box-right {
-  left: 50%;
-  transform: translateX(0%);
-  margin-left: 20px;
 }
 
 .cp-top {
