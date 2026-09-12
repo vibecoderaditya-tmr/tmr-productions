@@ -1,0 +1,136 @@
+:root {
+  --bg: #0f1923;
+  --box-bg: rgba(15,25,35,0.9);
+  --accent: #00d4ff;
+  --text-hi: #f0f6fa;
+  --text-mid: #b0c4cf;
+  --text-low: #62747d;
+  --border: rgba(0,212,255,0.2);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: transparent;
+  font-family: 'DM Mono', monospace;
+}
+
+.cp-canvas {
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cp-box {
+  position: absolute;
+  bottom: 40px;
+  width: 600px;
+}
+
+.cp-box-left {
+  left: 50%;
+  transform: translateX(-100%);
+  margin-left: -20px;
+}
+
+.cp-box-right {
+  left: 50%;
+  transform: translateX(0%);
+  margin-left: 20px;
+}
+
+.cp-top {
+  display: flex;
+  width: 100%;
+  height: 100px;
+  background: var(--box-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+}
+
+.cp-box-left .cp-top .cp-name {
+  width: 25%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.cp-box-left .cp-top .cp-prediction {
+  width: 75%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-hi);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.cp-box-right .cp-top .cp-prediction {
+  width: 75%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-hi);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.cp-box-right .cp-top .cp-name {
+  width: 25%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.cp-bottom {
+  width: 75%;
+  height: 50px;
+  background: var(--box-bg);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-mid);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+.cp-box-left .cp-bottom {
+  margin-left: 25%;
+}
+
+.cp-box-right .cp-bottom {
+  margin-left: 0%;
+}
+
+.cp-prediction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.cp-logo {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+}
