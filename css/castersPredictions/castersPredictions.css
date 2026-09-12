@@ -35,7 +35,15 @@ body {
 }
 
 .cp-box {
-  width: 500px;
+  width: fit-content;
+}
+
+.cp-box-left {
+  min-width: 540px;
+}
+
+.cp-box-right {
+  min-width: 540px;
 }
 
 .cp-top {
