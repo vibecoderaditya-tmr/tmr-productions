@@ -45,3 +45,15 @@ lgRef.child("cpMatch").on("value", function(snap) {
   currentMatch = snap.val() || "M1";
   listenCasters(currentMatch);
 });
+
+lgRef.child("caster1/casterName").on("value", function(snap) {
+  var name = snap.val() || "CASTER NAME";
+  var el = document.getElementById("cp-name-left");
+  if (el) el.textContent = name;
+});
+
+lgRef.child("caster2/casterName").on("value", function(snap) {
+  var name = snap.val() || "CASTER NAME";
+  var el = document.getElementById("cp-name-right");
+  if (el) el.textContent = name;
+});

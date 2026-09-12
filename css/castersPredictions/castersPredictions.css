@@ -71,6 +71,7 @@ body {
   font-weight: 600;
   letter-spacing: 2px;
   padding: 6px;
+  text-transform: uppercase;
 }
 
 .cp-slots {
