@@ -18,3 +18,8 @@ document.getElementById("card-caster1").onclick = function() {
 document.getElementById("card-caster2").onclick = function() {
   window.location.href = "caster2.html";
 };
+
+window.history.pushState(null, "", window.location.href);
+window.addEventListener("popstate", function() {
+  window.history.pushState(null, "", window.location.href);
+});
