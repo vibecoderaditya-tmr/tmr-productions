@@ -2,17 +2,20 @@ var currentMatch = "M1";
 var caster1Listener = null;
 var caster2Listener = null;
 
-function renderLogos(tags, container) {
-  container.innerHTML = "";
-  if (!tags || !tags.length) return;
-  tags.forEach(function(tag) {
-    var img = document.createElement("img");
-    img.src = "img/logos/" + tag.toLowerCase() + ".webp";
-    img.alt = tag;
-    img.className = "cp-logo";
-    img.onerror = function() { this.style.display = "none"; };
-    container.appendChild(img);
-  });
+function renderSlots(tags, container) {
+  var slots = container.querySelectorAll(".cp-slot");
+  for (var i = 0; i < slots.length; i++) {
+    var logoEl = slots[i].querySelector(".cp-slot-logo");
+    var tagEl = slots[i].querySelector(".cp-slot-tag");
+    if (tags && tags[i]) {
+      var tag = tags[i];
+      logoEl.innerHTML = '<img src="img/logos/' + tag.toLowerCase() + '.webp" alt="' + tag + '">';
+      tagEl.textContent = tag;
+    } else {
+      logoEl.innerHTML = "";
+      tagEl.textContent = "";
+    }
+  }
 }
 
 function listenCasters(match) {
@@ -24,8 +27,8 @@ function listenCasters(match) {
     if (tags && typeof tags === "object" && !Array.isArray(tags)) {
       tags = Object.values(tags);
     }
-    var container = document.getElementById("cp-logos-left");
-    if (container) renderLogos(tags, container);
+    var container = document.getElementById("cp-slots-left");
+    if (container) renderSlots(tags, container);
   });
 
   caster2Listener = lgRef.child("caster2/" + match).on("value", function(s) {
@@ -33,8 +36,8 @@ function listenCasters(match) {
     if (tags && typeof tags === "object" && !Array.isArray(tags)) {
       tags = Object.values(tags);
     }
-    var container = document.getElementById("cp-logos-right");
-    if (container) renderLogos(tags, container);
+    var container = document.getElementById("cp-slots-right");
+    if (container) renderSlots(tags, container);
   });
 }
 
