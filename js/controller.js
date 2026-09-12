@@ -394,6 +394,8 @@ lgRef.on("value", function(snap) {
   osxState = val["osPt"] || "hide";
   var oBtn = document.getElementById("btn-ospt-toggle");
   if (oBtn) oBtn.textContent = osxState === "show" ? "HIDE" : "SHOW";
+  var cpSel = document.getElementById("cp-match-select");
+  if (cpSel) cpSel.value = val["cpMatch"] || "M1";
 });
 
 var ptsVisRef = db.ref("/live-graphics/status");
@@ -573,3 +575,14 @@ function resetFont() {
   if (fontStatusEl) fontStatusEl.textContent = "Font reset to default";
 }
 window.resetFont = resetFont;
+
+function setCpMatch(val) {
+  lgRef.child("cpMatch").set(val);
+}
+window.setCpMatch = setCpMatch;
+
+lgRef.child("cpMatch").once("value", function(snap) {
+  if (snap.val() === null) {
+    lgRef.child("cpMatch").set("M1");
+  }
+});
