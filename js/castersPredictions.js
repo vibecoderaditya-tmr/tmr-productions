@@ -7,7 +7,7 @@ function renderLogos(tags, container) {
   if (!tags || !tags.length) return;
   tags.forEach(function(tag) {
     var img = document.createElement("img");
-    img.src = "img/logos/" + tag + ".webp";
+    img.src = "img/logos/" + tag.toLowerCase() + ".webp";
     img.alt = tag;
     img.className = "cp-logo";
     img.onerror = function() { this.style.display = "none"; };
