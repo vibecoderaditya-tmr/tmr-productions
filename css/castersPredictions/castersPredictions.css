@@ -86,11 +86,11 @@ body {
 }
 
 .cp-slot-logo {
-  flex: 1;
+  height: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
+  padding: 4px;
 }
 
 .cp-slot-logo img {
@@ -100,13 +100,14 @@ body {
 }
 
 .cp-slot-tag {
-  height: 26px;
+  height: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--accent);
   color: var(--bg);
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 600;
   letter-spacing: 1px;
+  line-height: 1;
 }
