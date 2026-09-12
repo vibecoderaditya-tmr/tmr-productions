@@ -367,4 +367,8 @@ body {
   .caster-wrap { padding: 32px 16px; gap: 32px; }
   .caster-logo { font-size: 36px; }
   .caster-content { grid-template-columns: 1fr; }
+  .caster-nav-row { flex-wrap: wrap; }
+  .match-nav { width: 100%; }
+  .reset-btn { width: 48%; }
+  .save-btn { width: 48%; font-size: 9px; word-wrap: break-word; white-space: normal; text-align: center; }
 }
