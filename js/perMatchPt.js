@@ -27,6 +27,7 @@ function loadLogo(imgEl, tag) {
 
 // --- perMpt leaderboard ---
 var _pmtTeams = {};
+var _pmtOverallTeams = {};
 var _pmtFrozen = false;
 var _pmtRowsBuilt = 0;
 var _pmtShowTimer = null;
@@ -43,12 +44,11 @@ function pmtEnsure(tag, name) {
   else if (name && (!_pmtTeams[tag].name || _pmtTeams[tag].name === tag)) _pmtTeams[tag].name = name;
 }
 
-function pmtApplyMatch(node) {
-  if (!node || typeof node !== "object" || !node["1_teamTag"]) return;
-  var tag = node["1_teamTag"];
-  pmtEnsure(tag, node["4_teamName"] || node["1_teamName"] || tag);
-  var k = Number(node["5_totalKills"]) || Number(node["3_killPoints"]) || 0;
-  var p = Number(node["6_placementPoints"]) || Number(node["4_placePoints"]) || 0;
+function pmtApplyMatch(node, tag) {
+  if (!node || typeof node !== "object") return;
+  pmtEnsure(tag, tag);
+  var k = Number(node.kills) || Number(node.killPoints) || 0;
+  var p = Number(node.placementPoints) || 0;
   if (k) _pmtTeams[tag].kills = k;
   if (p) _pmtTeams[tag].place = p;
 }
@@ -154,16 +154,21 @@ db.ref("/matches").on("value", function(snap) {
     if (m) { var n = parseInt(m[1], 10); if (n > highestNum) { highestNum = n; matchKey = key; } }
   }
   if (matchKey && data[matchKey]) {
-    for (var key in data[matchKey]) pmtApplyMatch(data[matchKey][key]);
+    var teamsNode = data[matchKey].teams || {};
+    for (var tag in teamsNode) {
+      var name = (_pmtOverallTeams[tag] && _pmtOverallTeams[tag].teamName) || tag;
+      pmtEnsure(tag, name);
+      pmtApplyMatch(teamsNode[tag], tag);
+    }
     pmtScheduleRender();
   }
 });
 
-db.ref("/matches/2_teams").on("value", function(snap) {
-  var td = snap.val() || {};
-  for (var tag in td) {
-    var n = td[tag];
-    pmtEnsure(tag, n && (n["1_teamName"] || n["4_teamName"]));
+db.ref("/matches/Overall/teams").on("value", function(snap) {
+  _pmtOverallTeams = snap.val() || {};
+  for (var tag in _pmtOverallTeams) {
+    var n = _pmtOverallTeams[tag];
+    pmtEnsure(tag, n && n.teamName);
   }
   pmtScheduleRender();
 });

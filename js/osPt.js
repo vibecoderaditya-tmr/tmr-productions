@@ -27,6 +27,7 @@ function loadLogo(imgEl, tag) {
 
 // --- osPt leaderboard ---
 var _osxTeams = {};
+var _osxOverallTeams = {};
 var _osxFrozen = false;
 var _osxRowsBuilt = 0;
 var _osxShowTimer = null;
@@ -45,14 +46,14 @@ function osxEnsure(tag, name) {
 
 function osxApplyTeam(node, tag) {
   if (!node) return;
-  osxEnsure(tag, node["1_teamName"] || node["4_teamName"] || tag);
-  var k = Number(node["3_killPoints"]) || 0;
-  var p = Number(node["4_placePoints"]) || 0;
+  osxEnsure(tag, node.teamName || tag);
+  var k = Number(node.killPoints) || 0;
+  var p = Number(node.placementPoints) || 0;
   if (k) _osxTeams[tag].kills = k;
   if (p) _osxTeams[tag].place = p;
   _osxTeams[tag].cr = node.isCrActivated == 1 ? 1 : 0;
   _osxTeams[tag].wcr = node.wonByCR == 1 ? 1 : 0;
-  _osxTeams[tag].booyah = Number(node["2_booyahs"]) || 0;
+  _osxTeams[tag].booyah = Number(node.booyahs) || 0;
 }
 
 function osxEntries() {
@@ -149,10 +150,10 @@ function osxScheduleRender() {
   osxRender(false);
 }
 
-db.ref("/matches/2_teams").on("value", function(snap) {
-  var td = snap.val() || {};
-  for (var tag in td) {
-    osxApplyTeam(td[tag], tag);
+db.ref("/matches/Overall/teams").on("value", function(snap) {
+  _osxOverallTeams = snap.val() || {};
+  for (var tag in _osxOverallTeams) {
+    osxApplyTeam(_osxOverallTeams[tag], tag);
   }
   osxScheduleRender();
 });
@@ -164,10 +165,10 @@ db.ref("/matches").on("value", function(snap) {
     if (!/^match\d+$/.test(key)) continue;
     var node = data[key];
     if (!node || typeof node !== "object") continue;
-    for (var tag in node) {
-      var tn = node[tag];
-      if (!tn || typeof tn !== "object" || tn["0_hash"] === undefined) continue;
-      osxEnsure(tag, tn["4_teamName"] || tn["1_teamName"] || tag);
+    var teamsNode = node.teams || {};
+    for (var tag in teamsNode) {
+      var name = (_osxOverallTeams[tag] && _osxOverallTeams[tag].teamName) || tag;
+      osxEnsure(tag, name);
       _osxTeams[tag].mp++;
     }
   }
@@ -202,23 +203,27 @@ function osxRenderMaps() {
         if (label) label.textContent = nm.toUpperCase();
       } else {
         var m = data["match" + idx];
-        if (m && m["1_mapName"]) {
+        if (m && m.meta && m.meta.mapName) {
           (function(img, file, name) {
             var imgEl = new Image();
             imgEl.onload = function() { img.src = "img/maps/" + file + ".webp"; };
             imgEl.onerror = function() { img.src = "img/maps/random.webp"; };
             img.src = "img/maps/" + file + ".webp";
             if (label) label.textContent = name.toUpperCase();
-          })(img, String(m["1_mapName"]).toLowerCase(), String(m["1_mapName"]));
+          })(img, String(m.meta.mapName).toLowerCase(), String(m.meta.mapName));
         } else {
           img.src = "img/maps/random.webp";
           if (label) label.textContent = "RANDOM";
         }
       }
       var mm = data["match" + idx];
-      if (mm && mm["3_status"] === "ended") {
+      if (mm && mm.meta && mm.meta.status === "ended") {
         box.classList.add("completed");
-        var wtag = mm["4_BOOYAH"] && mm["4_BOOYAH"]["tag"];
+        var wtag = null;
+        var mmTeams = mm.teams || {};
+        for (var t in mmTeams) {
+          if (mmTeams[t] && mmTeams[t].booyah === 1) { wtag = t; break; }
+        }
         if (winnerImg) {
           var wf = String(wtag || "").trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
           if (wf) {

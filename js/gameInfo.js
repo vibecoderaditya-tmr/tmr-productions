@@ -29,7 +29,7 @@ db.ref("/matches").on("value", function(snap) {
   if (!matchKey) return;
   const match = data[matchKey] || {};
   if (rows[0] && rows[0].text) rows[0].text.textContent = "GAME " + highestNum;
-  if (rows[1] && rows[1].text) rows[1].text.textContent = match["1_mapName"] || "";
+  if (rows[1] && rows[1].text) rows[1].text.textContent = (match.meta && match.meta.mapName) || "";
 });
 
 function setTeamLogo(imgEl, tag) {

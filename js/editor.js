@@ -508,6 +508,30 @@ var TABS = [
         ]
       }
     ]
+  },
+  {
+    id: 'teamStats',
+    label: 'Team Stats',
+    path: '/live-graphics/editor/teamStats',
+    groups: [
+      {
+        label: 'Panels',
+        fields: [
+          { key: 'ts-left-w', label: 'Left Width', desc: 'Left panel width', default: 180 },
+          { key: 'ts-left-h', label: 'Left Height', desc: 'Left panel height', default: 320 },
+          { key: 'ts-right-w', label: 'Right Width', desc: 'Right panel width', default: 350 },
+          { key: 'ts-right-h', label: 'Right Height', desc: 'Right panel height', default: 320 },
+          { key: 'ts-gap', label: 'Panel Gap', desc: 'Gap between left and right', default: 0 },
+          { key: 'ts-border-radius', label: 'Border Radius', desc: 'Corner radius', default: 14 }
+        ]
+      },
+      {
+        label: 'Grid',
+        fields: [
+          { key: 'ts-grid-gap', label: 'Grid Gap', desc: 'Gap between player wrappers', default: 45 }
+        ]
+      }
+    ]
   }
 ];
 
