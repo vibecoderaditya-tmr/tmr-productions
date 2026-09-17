@@ -17,18 +17,24 @@ var gameEl = document.getElementById('winnerGame');
 var latestMatchData = null;
 
 var CHAR_IMAGES = [
-  'blacksmith','detective','designer','crazygirl','yakuza',
-  'xtreme','villain','tracker','superteen','superstar',
-  'auroraboy','bounty','cityheroboy','graffitist','geek',
-  'electricgirl','dreamlandboy','djmale_awakening','djmale',
-  'monkeygod','mademana','professor','musicbro1'
+  'A124','Alok','Alvaro','Alvaro Awaken','Andrew','Andrew Awaken',
+  'Antonio','A-Patroa','Awakened Alok','Caroline','Chrono','Clu',
+  'Dasha','D-bee','Dimitri','Ford','Hayato','Hayato Awaken',
+  'Homer','Ignis','Iris','J.Biebs','Jai','Joseph','Jota','K',
+  'Kairos','Kapella','Kassie','Kelly','Kelly Awaken','Kenta',
+  'Kla','Koda','Laura','Leon','Lila','Luna','Luqueta','Maro',
+  'Maxim','Miguel','Misha','Moco','Moco Awaken','Morse','Nairi',
+  'Nero','Nikita','Notora','Olivia','Orion','Oscar','Otho',
+  'Paloma','Primis','Rafael','Ray','Rin','Ryden','Santino',
+  'Shani','Shirou','Skyler','Sonia','Steffie','Suzy','Tatsuya',
+  'Thiva','Wolfrahh','Wukong','Xayne'
 ];
 
 function initImagePool() {
   var pool = JSON.parse(localStorage.getItem('winnerImgPool'));
   var idx = parseInt(localStorage.getItem('winnerImgIdx')) || 0;
   var count = parseInt(localStorage.getItem('winnerRenderCount')) || 0;
-  if (!pool || pool.length === 0) {
+  if (!pool || pool.length === 0 || pool.some(function(n) { return CHAR_IMAGES.indexOf(n) === -1; })) {
     pool = CHAR_IMAGES.slice();
     shuffle(pool);
     idx = 0;
