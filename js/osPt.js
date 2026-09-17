@@ -32,6 +32,7 @@ var _osxFrozen = false;
 var _osxRowsBuilt = 0;
 var _osxShowTimer = null;
 var _osxHideTimer = null;
+var _osxTeamCount = 18;
 
 function cssVarSec(name) {
   var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -119,7 +120,9 @@ function osxFillCol(col, entries, offset, rowsPerCol, timings) {
 function osxRender(animate) {
   var entries = osxEntries();
   entries.sort(function(a, b) { return b.total - a.total; });
-  entries = entries.slice(0, 12);
+  var teamCount = _osxTeamCount === 12 ? 12 : 18;
+  var entriesTwo = entries.slice(0, teamCount);
+  var entriesOne = entries.slice(0, 12);
 
   var timings = null;
   if (animate) {
@@ -133,15 +136,15 @@ function osxRender(animate) {
   }
 
   var tCols = document.querySelectorAll(".twoSided .osx-col");
-  var rowsPerCol = tCols.length ? Math.ceil(entries.length / tCols.length) : 0;
+  var rowsPerCol = tCols.length ? Math.ceil(entriesTwo.length / tCols.length) : 0;
   _osxRowsBuilt = rowsPerCol;
   for (var c = 0; c < tCols.length; c++) {
-    osxFillCol(tCols[c], entries, c * rowsPerCol, rowsPerCol, timings);
+    osxFillCol(tCols[c], entriesTwo, c * rowsPerCol, rowsPerCol, timings);
   }
 
   var oCols = document.querySelectorAll(".oneSided .osx-col");
   for (var oc = 0; oc < oCols.length; oc++) {
-    osxFillCol(oCols[oc], entries, 0, entries.length, timings);
+    osxFillCol(oCols[oc], entriesOne, 0, entriesOne.length, timings);
   }
 }
 
@@ -263,6 +266,17 @@ db.ref("/live-graphics/mapsRows").on("value", function(snap) {
     wrappers[w].classList.remove("rows-1", "rows-2", "rows-3");
     wrappers[w].classList.add("rows-" + n);
   }
+});
+
+db.ref("/live-graphics/osPtTeamCount").on("value", function(snap) {
+  var n = Number(snap.val());
+  _osxTeamCount = n === 12 ? 12 : 18;
+  var two = document.querySelector(".twoSided");
+  if (two) {
+    two.classList.remove("teams-12", "teams-18");
+    two.classList.add(_osxTeamCount === 12 ? "teams-12" : "teams-18");
+  }
+  osxScheduleRender();
 });
 
 db.ref("/live-graphics/osPtLayout").on("value", function(snap) {

@@ -9,10 +9,10 @@ html, body {
 :root {
   /* --- osPt layout --- */
   --osx-cols-w: 1820px;
-  --osx-cols-h: 505px;
+  --osx-cols-h: 525px;
   --osx-col-gap: 20px;
-  --osx-hdr-h: 69px;
-  --osx-row-h: 69px;
+  --osx-hdr-h: 53px;
+  --osx-row-h: 52px;
   --osx-gap-y: 10px;
   --osx-x: 210px;
   --osx-y: 110px;
@@ -32,8 +32,8 @@ html, body {
   --osx-pad-booyah: 14px;
   --osx-booyah: calc(var(--osx-hdr-h) - 10px);
   --osx-name-x: 0px;
-  --osx-row-size: 28px;
-  --osx-hdr-size: 20px;
+  --osx-row-size: 21px;
+  --osx-hdr-size: 16px;
   --osx-logo: calc(var(--osx-row-h) - 5px);
   --osx-logo-gap: 11px;
   --osx-hdr-bg: #1f2937;

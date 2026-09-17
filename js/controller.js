@@ -175,6 +175,22 @@ db.ref("/live-graphics/osPtLayout").on("value", function(snap) {
   if (sel) sel.value = v;
 });
 
+function setOsPtTeamCount(n) {
+  lgRef.child("osPtTeamCount").set(Number(n) === 12 ? 12 : 18);
+}
+window.setOsPtTeamCount = setOsPtTeamCount;
+
+db.ref("/live-graphics/osPtTeamCount").on("value", function(snap) {
+  var n = Number(snap.val());
+  if (n !== 12) n = 18;
+  _osxTeamCountSel = n;
+  var btns = document.querySelectorAll(".ospt-teams-btn");
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.toggle("active", Number(btns[i].dataset.teams) === n);
+  }
+  renderOsxRef();
+});
+
 db.ref("/live-graphics/mapsRows").on("value", function(snap) {
   var n = Number(snap.val()) || 3;
   var btns = document.querySelectorAll(".maps-row-btn");
@@ -186,6 +202,7 @@ db.ref("/live-graphics/mapsRows").on("value", function(snap) {
 // --- osPt data reference (from 2_teams only) ---
 var _osxTeams = {};
 var _osxMatchNum = 0;
+var _osxTeamCountSel = 18;
 
 function osxEnsure(tag, name) {
   if (!_osxTeams[tag]) _osxTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0 };
@@ -216,7 +233,7 @@ function renderOsxRef() {
     return;
   }
   entries.sort(function(a, b) { return b.total - a.total; });
-  entries = entries.slice(0, 12);
+  entries = entries.slice(0, _osxTeamCountSel === 12 ? 12 : 18);
   statusEl.textContent = "Total Match " + _osxMatchNum + " data showing";
   var html = '<div class="osx-ref-row osx-ref-hdr"><span>#</span><span>TEAM</span><span>ELIM</span><span>PLACE</span><span>TOTAL</span></div>';
   for (var i = 0; i < entries.length; i++) {

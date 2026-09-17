@@ -421,7 +421,7 @@ var TABS = [
         label: 'Columns',
         fields: [
           { key: 'osx-cols-w', label: 'Columns Width', desc: 'Leaderboard width', default: 1820 },
-          { key: 'osx-cols-h', label: 'Columns Height', desc: 'Leaderboard height', default: 505 },
+          { key: 'osx-cols-h', label: 'Columns Height', desc: 'Leaderboard height', default: 525 },
           { key: 'osx-col-gap', label: 'Column Gap', desc: 'Gap between the two columns', default: 20 },
           { key: 'osx-gap-y', label: 'Vertical Gap', desc: 'Gap between header and rows', default: 10 },
           { key: 'osprm-top', label: 'Canvas Top Offset', desc: 'Moves whole overlay up/down', default: 0 }
@@ -430,8 +430,8 @@ var TABS = [
       {
         label: 'Sizes',
         fields: [
-          { key: 'osx-hdr-h', label: 'Header Height', desc: 'Column header height', default: 69 },
-          { key: 'osx-row-h', label: 'Row Height', desc: 'Leaderboard row height', default: 69 },
+          { key: 'osx-hdr-h', label: 'Header Height', desc: 'Column header height', default: 53 },
+          { key: 'osx-row-h', label: 'Row Height', desc: 'Leaderboard row height', default: 52 },
           { key: 'osx-rank-w', label: 'Rank Width', desc: 'Rank cell width', default: 82 },
           { key: 'osx-team-w', label: 'Team Width', desc: 'Team name cell width', default: 378 },
           { key: 'osx-mp-w', label: 'MP Width', desc: 'MP cell width', default: 69 },
@@ -447,8 +447,8 @@ var TABS = [
           { key: 'osx-pad-place', label: 'Place Padding', desc: 'Place cell padding', default: 14 },
           { key: 'osx-pad-total', label: 'Total Padding', desc: 'Total cell padding', default: 14 },
           { key: 'osx-name-x', label: 'Name Left Offset', desc: 'Team name left offset', default: 0 },
-          { key: 'osx-row-size', label: 'Row Font Size', desc: 'Row text size', default: 28 },
-          { key: 'osx-hdr-size', label: 'Header Font Size', desc: 'Header text size', default: 20 },
+          { key: 'osx-row-size', label: 'Row Font Size', desc: 'Row text size', default: 21 },
+          { key: 'osx-hdr-size', label: 'Header Font Size', desc: 'Header text size', default: 16 },
           { key: 'osx-logo-gap', label: 'Logo-Name Gap', desc: 'Gap between logo and name', default: 11 }
         ]
       },

@@ -6,6 +6,23 @@
   gap: var(--osx-gap-y);
 }
 
+/* --- twoSided team-count modes (set via Firebase osPtTeamCount) --- */
+.twoSided.teams-12 {
+  --osx-cols-h: 505px;
+  --osx-hdr-h: 69px;
+  --osx-row-h: 69px;
+  --osx-row-size: 28px;
+  --osx-hdr-size: 20px;
+}
+
+.twoSided.teams-18 {
+  --osx-cols-h: 525px;
+  --osx-hdr-h: 53px;
+  --osx-row-h: 52px;
+  --osx-row-size: 21px;
+  --osx-hdr-size: 16px;
+}
+
 .osx-cols {
   display: flex;
   gap: var(--osx-col-gap);
