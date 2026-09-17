@@ -41,7 +41,7 @@ function cssVarSec(name) {
 }
 
 function osxEnsure(tag, name) {
-  if (!_osxTeams[tag]) _osxTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0, mp: 0, booyah: 0, cr: 0, wcr: 0 };
+  if (!_osxTeams[tag]) _osxTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0, mp: 0, booyah: 0, cr: 0, wcr: 0, rank: 0 };
   else if (name && (!_osxTeams[tag].name || _osxTeams[tag].name === tag)) _osxTeams[tag].name = name;
 }
 
@@ -55,13 +55,14 @@ function osxApplyTeam(node, tag) {
   _osxTeams[tag].cr = node.isCrActivated == 1 ? 1 : 0;
   _osxTeams[tag].wcr = node.wonByCR == 1 ? 1 : 0;
   _osxTeams[tag].booyah = Number(node.booyahs) || 0;
+  _osxTeams[tag].rank = Number(node.rank) || 0;
 }
 
 function osxEntries() {
   return Object.keys(_osxTeams).map(function(tag) {
     var k = _osxTeams[tag].kills || 0;
     var p = _osxTeams[tag].place || 0;
-    return { tag: tag, name: _osxTeams[tag].name, kills: k, place: p, total: k + p, mp: _osxTeams[tag].mp || 0, booyah: _osxTeams[tag].booyah || 0, cr: _osxTeams[tag].cr || 0, wcr: _osxTeams[tag].wcr || 0 };
+    return { tag: tag, name: _osxTeams[tag].name, kills: k, place: p, total: k + p, mp: _osxTeams[tag].mp || 0, booyah: _osxTeams[tag].booyah || 0, cr: _osxTeams[tag].cr || 0, wcr: _osxTeams[tag].wcr || 0, rank: Number(_osxTeams[tag].rank) || 0 };
   });
 }
 
@@ -77,11 +78,12 @@ function osxFillCol(col, entries, offset, rowsPerCol, timings) {
     if (idx < entries.length) {
       var e = entries[idx];
       var place = Math.max(0, e.place);
+      var rnk = e.rank > 0 ? e.rank : (idx + 1);
       var rankHtml = e.wcr === 1
-        ? "<span class=\"osx-rank\"><span class=\"osx-rank-num\"><span class=\"osx-txt\">#" + (idx + 1) + "</span></span><img class=\"osx-crown\" src=\"img/wonByCR.webp\" alt=\"\"></span>"
+        ? "<span class=\"osx-rank\"><span class=\"osx-rank-num\"><span class=\"osx-txt\">#" + rnk + "</span></span><img class=\"osx-crown\" src=\"img/wonByCR.webp\" alt=\"\"></span>"
         : (e.cr === 1
-          ? "<span class=\"osx-rank\"><span class=\"osx-rank-num\"><span class=\"osx-txt\">#" + (idx + 1) + "</span></span><img class=\"osx-crown\" src=\"img/Wcrown.webp\" alt=\"\"></span>"
-          : "<span class=\"osx-rank\"><span class=\"osx-txt\">#" + (idx + 1) + "</span></span>");
+          ? "<span class=\"osx-rank\"><span class=\"osx-rank-num\"><span class=\"osx-txt\">#" + rnk + "</span></span><img class=\"osx-crown\" src=\"img/Wcrown.webp\" alt=\"\"></span>"
+          : "<span class=\"osx-rank\"><span class=\"osx-txt\">#" + rnk + "</span></span>");
       row.innerHTML =
         rankHtml +
         "<div class=\"osx-team\"><div class=\"osx-logo-wrap\"><img class=\"osx-logo\" alt=\"\"></div><span class=\"osx-name\"></span></div>" +
@@ -119,7 +121,13 @@ function osxFillCol(col, entries, offset, rowsPerCol, timings) {
 
 function osxRender(animate) {
   var entries = osxEntries();
-  entries.sort(function(a, b) { return b.total - a.total; });
+  entries.sort(function(a, b) {
+    var ar = Number(a.rank) || 0, br = Number(b.rank) || 0;
+    if (ar > 0 && br > 0) return ar - br;
+    if (ar > 0) return -1;
+    if (br > 0) return 1;
+    return b.total - a.total;
+  });
   var teamCount = _osxTeamCount === 12 ? 12 : 18;
   var entriesTwo = entries.slice(0, teamCount);
   var entriesOne = entries.slice(0, 12);

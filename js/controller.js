@@ -205,7 +205,7 @@ var _osxMatchNum = 0;
 var _osxTeamCountSel = 18;
 
 function osxEnsure(tag, name) {
-  if (!_osxTeams[tag]) _osxTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0 };
+  if (!_osxTeams[tag]) _osxTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0, rank: 0 };
   else if (name && (!_osxTeams[tag].name || _osxTeams[tag].name === tag)) _osxTeams[tag].name = name;
 }
 
@@ -216,6 +216,7 @@ function osxApplyTeam(node, tag) {
   var p = Number(node.placementPoints) || 0;
   if (k) _osxTeams[tag].kills = k;
   if (p) _osxTeams[tag].place = p;
+  _osxTeams[tag].rank = Number(node.rank) || 0;
 }
 
 function renderOsxRef() {
@@ -225,21 +226,28 @@ function renderOsxRef() {
   var entries = Object.keys(_osxTeams).map(function(tag) {
     var k = _osxTeams[tag].kills || 0;
     var p = _osxTeams[tag].place || 0;
-    return { tag: tag, name: _osxTeams[tag].name, kills: k, place: p, total: k + p };
+    return { tag: tag, name: _osxTeams[tag].name, kills: k, place: p, total: k + p, rank: Number(_osxTeams[tag].rank) || 0 };
   });
   if (!entries.length) {
     statusEl.textContent = "No team data";
     refEl.innerHTML = "";
     return;
   }
-  entries.sort(function(a, b) { return b.total - a.total; });
+  entries.sort(function(a, b) {
+    var ar = Number(a.rank) || 0, br = Number(b.rank) || 0;
+    if (ar > 0 && br > 0) return ar - br;
+    if (ar > 0) return -1;
+    if (br > 0) return 1;
+    return b.total - a.total;
+  });
   entries = entries.slice(0, _osxTeamCountSel === 12 ? 12 : 18);
   statusEl.textContent = "Total Match " + _osxMatchNum + " data showing";
   var html = '<div class="osx-ref-row osx-ref-hdr"><span>#</span><span>TEAM</span><span>ELIM</span><span>PLACE</span><span>TOTAL</span></div>';
   for (var i = 0; i < entries.length; i++) {
     var e = entries[i];
     var place = Math.max(0, e.place);
-    html += '<div class="osx-ref-row"><span>' + (i + 1) + '</span><span class="osx-ref-team">' + e.tag + '</span><span>' + e.kills + '</span><span>' + place + '</span><span>' + e.total + '</span></div>';
+    var rnk = e.rank > 0 ? e.rank : (i + 1);
+    html += '<div class="osx-ref-row"><span>' + rnk + '</span><span class="osx-ref-team">' + e.tag + '</span><span>' + e.kills + '</span><span>' + place + '</span><span>' + e.total + '</span></div>';
   }
   refEl.innerHTML = html;
 }
