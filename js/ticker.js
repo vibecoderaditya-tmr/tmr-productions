@@ -103,12 +103,20 @@ function animateCount(el, from, to) {
 }
 
 function renderTicker() {
-  const entries = Object.keys(teamsData || {}).map(tag => ({
+  // Roster comes from the live node: only the teams actually playing
+  // (live entries carry 2_isTeamAlive; meta keys like 3_status don't).
+  // Overall/teams only supplies names + totalScore for rank/pts display.
+  function isLiveTeam(tag) {
+    var n = liveData && liveData[tag];
+    return n && typeof n === "object" && n["2_isTeamAlive"] !== undefined;
+  }
+  let entries = Object.keys(liveData || {}).filter(isLiveTeam).map(tag => ({
     tag:  tag,
-    name: teamsData[tag].teamName || tag,
-    pts:  Number(teamsData[tag].totalScore) || 0,
+    name: (teamsData && teamsData[tag] && teamsData[tag].teamName) || (liveData[tag] && liveData[tag]["4_teamName"]) || tag,
+    pts:  Number(teamsData && teamsData[tag] && teamsData[tag].totalScore) || 0,
   }));
   entries.sort((a, b) => b.pts - a.pts);
+  entries = entries.slice(0, NUM_ROWS);
 
   const rowHeight = 40;
   const rowGap    = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--row-gap')) || 0;
