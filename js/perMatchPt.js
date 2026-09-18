@@ -40,7 +40,7 @@ function cssVarSec(name) {
 }
 
 function pmtEnsure(tag, name) {
-  if (!_pmtTeams[tag]) _pmtTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0 };
+  if (!_pmtTeams[tag]) _pmtTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0, booyah: 0 };
   else if (name && (!_pmtTeams[tag].name || _pmtTeams[tag].name === tag)) _pmtTeams[tag].name = name;
 }
 
@@ -51,14 +51,24 @@ function pmtApplyMatch(node, tag) {
   var p = Number(node.placementPoints) || 0;
   if (k) _pmtTeams[tag].kills = k;
   if (p) _pmtTeams[tag].place = p;
+  _pmtTeams[tag].booyah = node.booyah == 1 ? 1 : 0;
 }
 
 function pmtEntries() {
   return Object.keys(_pmtTeams).map(function(tag) {
     var k = _pmtTeams[tag].kills || 0;
     var p = _pmtTeams[tag].place || 0;
-    return { tag: tag, name: _pmtTeams[tag].name, kills: k, place: p, total: k + p };
+    return { tag: tag, name: _pmtTeams[tag].name, kills: k, place: p, total: k + p, booyah: _pmtTeams[tag].booyah == 1 ? 1 : 0 };
   });
+}
+
+function pmtTieBreak(a, b) {
+  if (b.total !== a.total) return b.total - a.total;
+  var aw = (a.booyah === 1 || a.place === 12) ? 1 : 0;
+  var bw = (b.booyah === 1 || b.place === 12) ? 1 : 0;
+  if (bw !== aw) return bw - aw;
+  if (b.kills !== a.kills) return b.kills - a.kills;
+  return b.place - a.place;
 }
 
 function pmtRender(animate) {
@@ -66,7 +76,7 @@ function pmtRender(animate) {
   if (!cols.length) return;
 
   var entries = pmtEntries();
-  entries.sort(function(a, b) { return b.total - a.total; });
+  entries.sort(pmtTieBreak);
   entries = entries.slice(0, 12);
 
   var rowsPerCol = cols.length ? Math.ceil(entries.length / cols.length) : 0;

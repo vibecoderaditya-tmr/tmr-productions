@@ -266,7 +266,7 @@ var _refOverallTeams = {};
 var _refMatchKey = "";
 
 function refEnsure(tag, name) {
-  if (!_refTeams[tag]) _refTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0 };
+  if (!_refTeams[tag]) _refTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0, booyah: 0 };
   else if (name && (!_refTeams[tag].name || _refTeams[tag].name === tag)) _refTeams[tag].name = name;
 }
 
@@ -277,6 +277,16 @@ function refApplyMatch(node, tag) {
   var p = Number(node.placementPoints) || 0;
   if (k) _refTeams[tag].kills = k;
   if (p) _refTeams[tag].place = p;
+  _refTeams[tag].booyah = node.booyah == 1 ? 1 : 0;
+}
+
+function pmtTieBreakRef(a, b) {
+  if (b.total !== a.total) return b.total - a.total;
+  var aw = (a.booyah === 1 || a.place === 12) ? 1 : 0;
+  var bw = (b.booyah === 1 || b.place === 12) ? 1 : 0;
+  if (bw !== aw) return bw - aw;
+  if (b.kills !== a.kills) return b.kills - a.kills;
+  return b.place - a.place;
 }
 
 function renderMatchRef() {
@@ -291,9 +301,9 @@ function renderMatchRef() {
   var entries = Object.keys(_refTeams).map(function(tag) {
     var k = _refTeams[tag].kills || 0;
     var p = _refTeams[tag].place || 0;
-    return { tag: tag, name: _refTeams[tag].name, kills: k, place: p, total: k + p };
+    return { tag: tag, name: _refTeams[tag].name, kills: k, place: p, total: k + p, booyah: _refTeams[tag].booyah == 1 ? 1 : 0 };
   });
-  entries.sort(function(a, b) { return b.total - a.total; });
+  entries.sort(pmtTieBreakRef);
   entries = entries.slice(0, 12);
   var num = _refMatchKey.replace(/^match/i, "");
   statusEl.textContent = "Match " + num + " data now";
