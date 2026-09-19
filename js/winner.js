@@ -15,6 +15,8 @@ var stageEl = document.getElementById('winnerStage');
 var crEl = document.getElementById('winnerCr');
 var gameEl = document.getElementById('winnerGame');
 var latestMatchData = null;
+var winnerVisible = false;
+var winnerRerenderT = null;
 
 var CHAR_IMAGES = [
   'A124','Alok','Alvaro','Alvaro Awaken','Andrew','Andrew Awaken',
@@ -251,6 +253,18 @@ db.ref('/matches').on('value', function(snap) {
       latestMatchData = null;
     }
     gameEl.textContent = 'GAME ' + highestNum + ' - ' + ((match.meta && match.meta.mapName) || '');
+    // If winner is on screen, re-render live so Firebase edits show
+    // without hide+show. Debounced to coalesce rapid updates; images
+    // don't advance on live re-renders (advanceCycle=false).
+    if (winnerVisible && latestMatchData) {
+      if (winnerRerenderT) clearTimeout(winnerRerenderT);
+      winnerRerenderT = setTimeout(function() {
+        winnerRerenderT = null;
+        if (winnerVisible && latestMatchData) {
+          renderWinner(latestMatchData.tag, latestMatchData.rosters || {}, parseInt(latestMatchData.totalKills) || 0, false);
+        }
+      }, 800);
+    }
   }
 });
 
@@ -309,10 +323,13 @@ db.ref('/live-graphics/editor/winner').on('value', function(snap) {
 db.ref('/live-graphics/winner').on('value', function(snap) {
   var val = snap.val();
   if (val === 'show' && latestMatchData) {
+    winnerVisible = true;
     renderWinner(latestMatchData.tag, latestMatchData.rosters || {}, parseInt(latestMatchData.totalKills) || 0, true);
   } else if (val === 'shuffle') {
     shufflePool();
   } else if (val === 'hide') {
+    winnerVisible = false;
+    if (winnerRerenderT) { clearTimeout(winnerRerenderT); winnerRerenderT = null; }
     grid.innerHTML = '';
   }
 });
