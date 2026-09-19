@@ -23,7 +23,7 @@ var osPtThemeRef   = db.ref("/live-graphics/theme/osPt");
 var gameInfoThemeRef = db.ref("/live-graphics/theme/gameInfo");
 var teamStatsThemeRef = db.ref("/live-graphics/theme/teamStats");
 
-var TICKER_KEYS = ["headerBg","headerText","headerBorder","logoBg","rowBg","rowText","rowBorder","barAlive","barDead","rankHeader","teamHeader","aliveHeader","elimsHeader","ptsHeader","rankTeamRow","aliveRow","rightRow","rankTeamBg","rightBg","endBg","curtainColor","highlightTeam"];
+var TICKER_KEYS = ["headerBg","headerText","headerBorder","logoBg","rowBg","rowText","rowBorder","barAlive","barDead","rankHeader","teamHeader","aliveHeader","elimsHeader","ptsHeader","rankTeamRow","aliveRow","rightRow","rankTeamBg","rightBg","endBg","curtainColor","highlightTeam","highlightTeamText"];
 var ELIM_KEYS   = ["bgLeft","bgRight","leftHash","rightTeam","rightElim"];
 var ELIM_BMPS_KEYS = ["logoBg","elimsBg","elimTxtBg","hashTxt","elimsTxt","elimTxt"];
 var GAMEINFO_KEYS  = ["rowBg","rowText"];

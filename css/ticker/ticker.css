@@ -20,6 +20,8 @@
   --row-bg:          #00499b ;
   --row-text:       #ffffff;
   --row-border:      #00499b ;
+  --highlight-team:      #d4af37;
+  --highlight-team-text: #16090a;
   --bar-alive:           #26b2f2 ;
   --bar-dead:            #000000;
   --bar-width:       6px;
@@ -138,6 +140,11 @@ html, body {
   0%, 100% { background-color: color-mix(in srgb, var(--highlight-team) 55%, transparent); }
   50%       { background-color: var(--highlight-team); }
 }
+.row-wrap.observed-wrap .ticker-row .col-rank,
+.row-wrap.observed-wrap .ticker-row .col-team,
+.row-wrap.observed-wrap .ticker-row .col-alive,
+.row-wrap.observed-wrap .ticker-row .col-elims,
+.row-wrap.observed-wrap .ticker-row .col-pts { color: var(--highlight-team-text); }
 .col-rank  { width: calc(var(--box-width) * var(--col-rank) / 100); flex-shrink: 0; transition: width var(--pts-duration) var(--pts-easing); }
 .col-team  { width: calc(var(--box-width) * var(--col-team) / 100); flex-shrink: 0; transition: width var(--pts-duration) var(--pts-easing); }
 .col-alive { width: calc(var(--box-width) * var(--col-alive) / 100); flex-shrink: 0; transition: width var(--pts-duration) var(--pts-easing); }

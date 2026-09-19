@@ -667,6 +667,7 @@ db.ref("/live-graphics/theme/ticker").on("value", function(snap) {
   if (_h(t.endBg))         root.style.setProperty("--col-end-bg", t.endBg);
   if (_h(t.curtainColor))  root.style.setProperty("--curtain-color", t.curtainColor);
   if (_h(t.highlightTeam)) { root.style.setProperty("--highlight-team", t.highlightTeam); }
+  if (_h(t.highlightTeamText)) { root.style.setProperty("--highlight-team-text", t.highlightTeamText); }
 });
 
 db.ref("/live-graphics/fonts/config").on("value", function(snap) {

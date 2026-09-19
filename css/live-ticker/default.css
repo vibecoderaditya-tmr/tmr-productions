@@ -18,6 +18,11 @@
 .row-wrap.observed-wrap .ticker-row .col-elims,
 .row-wrap.observed-wrap .ticker-row .col-pts,
 .row-wrap.observed-wrap .ticker-row .col-end { background: var(--highlight-team); }
+.row-wrap.observed-wrap .ticker-row .col-rank,
+.row-wrap.observed-wrap .ticker-row .col-team,
+.row-wrap.observed-wrap .ticker-row .col-alive,
+.row-wrap.observed-wrap .ticker-row .col-elims,
+.row-wrap.observed-wrap .ticker-row .col-pts { color: var(--highlight-team-text); }
 
 .anim-hide-left   { transform: translateX(-100%); opacity: 0; }
 .anim-hide-right  { transform: translateX(100%); opacity: 0; }

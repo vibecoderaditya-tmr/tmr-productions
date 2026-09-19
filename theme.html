@@ -384,6 +384,21 @@
               </div>
             </div>
 
+            <div class="theme-field">
+              <div class="theme-field-label">
+                <span class="theme-field-name">Highlight Team Text Color</span>
+                <span class="theme-field-desc">observed row text color</span>
+              </div>
+              <div class="color-pair">
+                <div class="color-swatch-wrap">
+                  <input type="color" id="tkr-highlightTeamText" value="#16090a" oninput="onColorPick(this,'tkr')">
+                </div>
+                <input class="hex-text" type="text" id="hex-tkr-highlightTeamText" value="#16090A" maxlength="7" oninput="onHexType(this,'tkr')">
+                <button class="eyedropper-btn" onclick="pickColor(this)" title="Pick from screen">PICK A COLOR</button>
+                <button class="hex-copy-btn" onclick="copyHex('hex-tkr-highlightTeamText',this)" title="Copy">COPY COLOR</button>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
