@@ -77,6 +77,7 @@ const db = firebase.database();
 
 let teamsData = null;
 let liveData  = {};
+let matchTeams = {};
 
 let prevElims = {};
 let prevPts   = {};
@@ -104,20 +105,32 @@ function animateCount(el, from, to) {
 }
 
 function renderTicker() {
-  // Roster comes from the live node: only the teams actually playing
-  // (live entries carry 2_isTeamAlive; meta keys like 3_status don't).
-  // Overall/teams only supplies names + totalScore for rank/pts display.
+  // Roster: teams playing in the live node first (live entries carry
+  // 2_isTeamAlive; meta keys like 3_status don't). If fewer than
+  // NUM_ROWS are live, backfill with non-playing tags from the latest
+  // matchX node. Overall/teams supplies names + totalScore for rank/pts.
   function isLiveTeam(tag) {
     var n = liveData && liveData[tag];
     return n && typeof n === "object" && n["2_isTeamAlive"] !== undefined;
   }
-  let entries = Object.keys(liveData || {}).filter(isLiveTeam).map(tag => ({
-    tag:  tag,
-    name: (teamsData && teamsData[tag] && teamsData[tag].teamName) || (liveData[tag] && liveData[tag]["4_teamName"]) || tag,
-    pts:  Number(teamsData && teamsData[tag] && teamsData[tag].totalScore) || 0,
-  }));
-  entries.sort((a, b) => b.pts - a.pts);
-  entries = entries.slice(0, NUM_ROWS);
+  function toEntry(tag) {
+    return {
+      tag:  tag,
+      name: (teamsData && teamsData[tag] && teamsData[tag].teamName) || (liveData[tag] && liveData[tag]["4_teamName"]) || (matchTeams[tag] && matchTeams[tag].teamName) || tag,
+      pts:  Number(teamsData && teamsData[tag] && teamsData[tag].totalScore) || 0
+    };
+  }
+  function byPts(a, b) { return b.pts - a.pts; }
+  var liveEntries = Object.keys(liveData || {}).filter(isLiveTeam).map(toEntry).sort(byPts).slice(0, NUM_ROWS);
+  var have = {};
+  liveEntries.forEach(function(e) { have[e.tag] = true; });
+  var fillerEntries = [];
+  if (liveEntries.length < NUM_ROWS) {
+    fillerEntries = Object.keys(matchTeams || {}).filter(function(tag) {
+      return !have[tag] && matchTeams[tag] && typeof matchTeams[tag] === "object";
+    }).map(toEntry).sort(byPts).slice(0, NUM_ROWS - liveEntries.length);
+  }
+  let entries = liveEntries.concat(fillerEntries).sort(byPts);
 
   const rowHeight = 40;
   const rowGap    = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--row-gap')) || 0;
@@ -338,6 +351,17 @@ db.ref("/matches/Overall/teams").on("value", snap => {
 
 db.ref("/matches/live").on("value", snap => {
   liveData = snap.val() || {};
+  renderTicker();
+});
+
+db.ref("/matches").on("value", snap => {
+  var data = snap.val() || {};
+  var highestNum = 0, matchKey = "";
+  for (var key in data) {
+    var m = key.match(/^match(\d+)$/);
+    if (m) { var n = parseInt(m[1], 10); if (n > highestNum) { highestNum = n; matchKey = key; } }
+  }
+  matchTeams = (matchKey && data[matchKey] && data[matchKey].teams) || {};
   renderTicker();
 });
 
