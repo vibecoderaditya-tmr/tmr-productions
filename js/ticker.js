@@ -81,6 +81,46 @@ let liveData  = {};
 let prevElims = {};
 let prevPts   = {};
 
+let currentObservedTag = null;
+let lastEntries = [];
+
+// Observer highlight: source of truth is the live node.
+// - live/95_observing = {uid, pid, teamTag, playerName, ts}
+// - live/{TAG}/7_isObserving == 1 marks the team on screen.
+function getObservedTag(entries) {
+  var obs = liveData && liveData["95_observing"];
+  if (!obs || typeof obs !== "object") return null;
+  var ts = Number(obs.ts) || 0;
+  if (ts > 0) {
+    if (ts < 1e12) ts *= 1000; // accept seconds or ms epoch
+    if (Date.now() - ts > 60000) return null; // stale
+  }
+  var roster = {};
+  for (var i = 0; i < entries.length; i++) roster[entries[i].tag] = true;
+  var flagged = [];
+  var keys = Object.keys(liveData || {});
+  for (var k = 0; k < keys.length; k++) {
+    var tag = keys[k];
+    if (!roster[tag]) continue;
+    var n = liveData[tag];
+    if (n && typeof n === "object" && Number(n["7_isObserving"]) === 1) flagged.push(tag);
+  }
+  if (flagged.length === 1) return flagged[0];
+  // zero or multiple flags: trust 95_observing.teamTag as tiebreak
+  var want = obs.teamTag;
+  return (want && roster[want]) ? want : null;
+}
+
+function applyObservedHighlight(entries) {
+  lastEntries = entries;
+  var tag = getObservedTag(entries);
+  if (tag === currentObservedTag) return;
+  currentObservedTag = tag;
+  for (const wrap of rowEls) {
+    wrap.classList.toggle("observed-wrap", !!tag && wrap.dataset.tag === tag);
+  }
+}
+
 function animateCount(el, from, to) {
   if (from === to) { el.textContent = to; return; }
   if (el._countTimer) clearInterval(el._countTimer);
@@ -132,6 +172,8 @@ function renderTicker() {
       if (free) { free.dataset.tag = e.tag; assigned.add(e.tag); }
     }
   }
+
+  applyObservedHighlight(entries);
 
   for (const wrap of rowEls) {
     const row = innerRow(wrap);
@@ -283,6 +325,12 @@ db.ref("/matches/live").on("value", snap => {
   liveData = snap.val() || {};
   renderTicker();
 });
+
+// Re-check observer highlight every second so a stale 95_observing.ts
+// clears even when no Firebase event fires. Re-renders only on change.
+setInterval(function () {
+  if (lastEntries.length) applyObservedHighlight(lastEntries);
+}, 1000);
 
 db.ref("/live-graphics/editor/ticker").on("value", function(snap) {
   var vals = snap.val();

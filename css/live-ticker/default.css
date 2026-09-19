@@ -1,3 +1,24 @@
+.row-wrap.observed-wrap {
+  z-index: 3;
+}
+.row-wrap.observed-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  animation: observed-glow 2.5s ease-in-out infinite;
+}
+@keyframes observed-glow {
+  0%,100% { box-shadow: inset 0 0 6px 2px color-mix(in srgb, var(--highlight-team) 55%, transparent), inset 0 0 12px 4px color-mix(in srgb, var(--highlight-team) 35%, transparent); }
+  50% { box-shadow: inset 0 0 10px 3px color-mix(in srgb, var(--highlight-team) 80%, transparent), inset 0 0 18px 6px color-mix(in srgb, var(--highlight-team) 50%, transparent); }
+}
+
+.row-wrap.observed-wrap .ticker-row .col-alive,
+.row-wrap.observed-wrap .ticker-row .col-elims,
+.row-wrap.observed-wrap .ticker-row .col-pts,
+.row-wrap.observed-wrap .ticker-row .col-end { background: var(--highlight-team); }
+
 .anim-hide-left   { transform: translateX(-100%); opacity: 0; }
 .anim-hide-right  { transform: translateX(100%); opacity: 0; }
 .anim-in          { transform: translateX(0); opacity: 1; }
