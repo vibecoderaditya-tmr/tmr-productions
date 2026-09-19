@@ -80,7 +80,6 @@ let liveData  = {};
 
 let prevElims = {};
 let prevPts   = {};
-let currentTopFragTag = null;
 
 function animateCount(el, from, to) {
   if (from === to) { el.textContent = to; return; }
@@ -134,48 +133,11 @@ function renderTicker() {
     }
   }
 
-  let maxKills = -Infinity;
-  for (const e of entries) {
-    const live = liveData[e.tag];
-    if (!live) continue;
-    const aliveCount = Number(live["3_playersAlive"]) || 0;
-    if (aliveCount <= 0) continue;
-    const k = Number(live["5_totalKills"]) || 0;
-    if (k > maxKills) maxKills = k;
-  }
-
-  let topFragTag = null;
-  if (maxKills > 0) {
-    const killLeaders = entries.filter(e => {
-      const live = liveData[e.tag];
-      return live
-        && (Number(live["3_playersAlive"]) || 0) > 0
-        && (Number(live["5_totalKills"]) || 0) === maxKills;
-    });
-
-    if (killLeaders.length === 1) {
-      topFragTag = killLeaders[0].tag;
-    } else if (killLeaders.length > 1) {
-      let maxPts = -Infinity, maxPtsCount = 0;
-      for (const c of killLeaders) {
-        if (c.pts > maxPts) { maxPts = c.pts; maxPtsCount = 1; }
-        else if (c.pts === maxPts) { maxPtsCount++; }
-      }
-      topFragTag = (maxPtsCount === 1)
-        ? killLeaders.find(c => c.pts === maxPts).tag
-        : (currentTopFragTag && killLeaders.some(c => c.tag === currentTopFragTag))
-          ? currentTopFragTag
-          : null;
-    }
-  }
-  currentTopFragTag = topFragTag;
-
   for (const wrap of rowEls) {
     const row = innerRow(wrap);
 
     if (!wrap.dataset.tag || !activeTags.has(wrap.dataset.tag)) {
       wrap.style.display = "none";
-      wrap.classList.remove("top-frag-wrap");
       row.querySelector(".col-rank").textContent = "";
       row.querySelector(".team-logo").src = "";
       row.querySelector(".team-logo").style.display = "none";
@@ -214,8 +176,6 @@ function renderTicker() {
     const alive = Number(live["3_playersAlive"]) || 0;
     const elimOverlay = row.querySelector(".elim-overlay");
     const notPlayed = !liveData[e.tag];
-
-    wrap.classList.toggle("top-frag-wrap", !notPlayed && topFragTag === e.tag);
 
     if (notPlayed) {
       elimOverlay.classList.remove("show", "exit", "final");
@@ -360,7 +320,7 @@ db.ref("/live-graphics/theme/ticker").on("value", function(snap) {
   if (_h(t.rightBg))       { root.style.setProperty("--col-alive-bg", t.rightBg); root.style.setProperty("--col-elims-bg", t.rightBg); root.style.setProperty("--col-pts-bg", t.rightBg); }
   if (_h(t.endBg))         root.style.setProperty("--col-end-bg", t.endBg);
   if (_h(t.curtainColor))  root.style.setProperty("--curtain-color", t.curtainColor);
-  if (_h(t.topFragColor))  root.style.setProperty("--top-frag-color", t.topFragColor);
+  if (_h(t.highlightTeam))  root.style.setProperty("--highlight-team", t.highlightTeam);
 });
 
 db.ref("/live-graphics/fonts/config").on("value", function(snap) {

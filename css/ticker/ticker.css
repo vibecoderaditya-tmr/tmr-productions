@@ -110,15 +110,6 @@ html, body {
   z-index: 2;
 }
 
-.row-wrap.top-frag-wrap {
-  animation: top-frag-glow 2.5s ease-in-out infinite;
-  z-index: 3;
-}
-@keyframes top-frag-glow {
-  0%, 100% { filter: drop-shadow(0 0 6px rgba(255,200,0,0.7)) drop-shadow(0 0 12px rgba(255,180,0,0.5)); }
-  50%       { filter: drop-shadow(0 0 10px rgba(255,220,60,1))  drop-shadow(0 0 22px rgba(255,200,0,0.8)); }
-}
-
 .ticker-row {
   position: absolute;
   inset: 0;
@@ -131,14 +122,6 @@ html, body {
   color: var(--row-text);
   overflow: hidden;
 }
-.row-wrap.top-frag-wrap .ticker-row {
-  animation: top-frag-bg 2.5s ease-in-out infinite;
-}
-@keyframes top-frag-bg {
-  0%, 100% { background-color: #d4a017; }
-  50%       { background-color: #ffd700; }
-}
-
 .col-rank  { width: calc(var(--box-width) * var(--col-rank) / 100); flex-shrink: 0; transition: width var(--pts-duration) var(--pts-easing); }
 .col-team  { width: calc(var(--box-width) * var(--col-team) / 100); flex-shrink: 0; transition: width var(--pts-duration) var(--pts-easing); }
 .col-alive { width: calc(var(--box-width) * var(--col-alive) / 100); flex-shrink: 0; transition: width var(--pts-duration) var(--pts-easing); }

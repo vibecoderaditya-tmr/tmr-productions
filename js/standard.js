@@ -80,8 +80,7 @@ let liveData  = {};
 
 let prevElims = {};
 let prevPts   = {};
-let currentTopFragTag = null;
-let _topFragVisible = false;
+let _rowsSettled = false;
 
 function animateCount(el, from, to) {
   if (from === to) { el.textContent = to; return; }
@@ -135,48 +134,11 @@ function renderTicker() {
     }
   }
 
-  let maxKills = -Infinity;
-  for (const e of entries) {
-    const live = liveData[e.tag];
-    if (!live) continue;
-    const aliveCount = Number(live["3_playersAlive"]) || 0;
-    if (aliveCount <= 0) continue;
-    const k = Number(live["5_totalKills"]) || 0;
-    if (k > maxKills) maxKills = k;
-  }
-
-  let topFragTag = null;
-  if (maxKills > 0) {
-    const killLeaders = entries.filter(e => {
-      const live = liveData[e.tag];
-      return live
-        && (Number(live["3_playersAlive"]) || 0) > 0
-        && (Number(live["5_totalKills"]) || 0) === maxKills;
-    });
-
-    if (killLeaders.length === 1) {
-      topFragTag = killLeaders[0].tag;
-    } else if (killLeaders.length > 1) {
-      let maxPts = -Infinity, maxPtsCount = 0;
-      for (const c of killLeaders) {
-        if (c.pts > maxPts) { maxPts = c.pts; maxPtsCount = 1; }
-        else if (c.pts === maxPts) { maxPtsCount++; }
-      }
-      topFragTag = (maxPtsCount === 1)
-        ? killLeaders.find(c => c.pts === maxPts).tag
-        : (currentTopFragTag && killLeaders.some(c => c.tag === currentTopFragTag))
-          ? currentTopFragTag
-          : null;
-    }
-  }
-  currentTopFragTag = topFragTag;
-
   for (const wrap of rowEls) {
     const row = innerRow(wrap);
 
     if (!wrap.dataset.tag || !activeTags.has(wrap.dataset.tag)) {
       wrap.style.display = "none";
-      wrap.classList.remove("top-frag-wrap");
       row.querySelector(".col-rank").textContent = "";
       row.querySelector(".team-logo").src = "";
       row.querySelector(".team-logo").style.display = "none";
@@ -225,8 +187,6 @@ function renderTicker() {
     const alive = Number(live["3_playersAlive"]) || 0;
     const elimOverlay = row.querySelector(".elim-overlay");
     const notPlayed = !liveData[e.tag];
-
-    wrap.classList.toggle("top-frag-wrap", _topFragVisible && !notPlayed && topFragTag === e.tag);
 
     if (notPlayed) {
       elimOverlay.classList.remove("show", "exit", "final");
@@ -300,7 +260,7 @@ function renderTicker() {
         img.src = 'img/crown.webp';
         crown.appendChild(img);
         rowsContainer.appendChild(crown);
-        if (_topFragVisible) {
+        if (_rowsSettled) {
           requestAnimationFrame(function() {
             requestAnimationFrame(function() {
               crown.classList.remove('bts');
@@ -428,7 +388,7 @@ function curtainIn() {
       setTimeout(() => innerRow(w).classList.add("flipped"), i * 60);
     });
     setTimeout(() => {
-      _topFragVisible = true;
+      _rowsSettled = true;
       renderTicker();
       revealCrowns();
       wrap.remove(); box.style.position = "";
@@ -441,7 +401,7 @@ function curtainOut() {
     _firstCurtain = false;
     const h = document.querySelector(".ticker-header");
     h.classList.remove("anim-hide-left", "anim-hide-right", "anim-in", "trans-anim", "trans-anim-out");
-    _topFragVisible = false;
+    _rowsSettled = false;
     h.style.display = "none";
     rowEls.forEach(w => {
       innerRow(w).classList.remove("anim-hide-left", "anim-hide-right", "anim-in", "trans-anim", "trans-anim-out");
@@ -456,7 +416,7 @@ function curtainOut() {
   wrap.classList.add("strips-grow");
   const afterStrips = Math.ceil(wrap._maxFinish) + 500;
   setTimeout(() => {
-    _topFragVisible = false;
+    _rowsSettled = false;
     rowEls.forEach(w => {
       innerRow(w).classList.remove("curtain-flip", "flipped");
       w.style.display = "none";
@@ -536,10 +496,10 @@ function applyAnim() {
       void header.offsetHeight; allTargets.forEach(function(el) { el.style.transition = ""; });
       header.classList.remove("trans-fade-out"); header.classList.add("trans-fade"); header.classList.remove("anim-fade-out"); header.classList.add("anim-fade-in");
       rowTargets.forEach(function(rowEl,i) { var t = setTimeout(function() { rowEl.classList.remove("trans-fade-out"); rowEl.classList.add("trans-fade"); rowEl.classList.remove("anim-fade-out"); rowEl.classList.add("anim-fade-in"); }, 80 + i * 60); animTimers.push(t); });
-      var topFragT = setTimeout(function() { _topFragVisible = true; renderTicker(); revealCrowns(); }, rowTargets.length * 60 + 80 + 500);
-      animTimers.push(topFragT);
+      var settleT = setTimeout(function() { _rowsSettled = true; renderTicker(); revealCrowns(); }, rowTargets.length * 60 + 80 + 500);
+      animTimers.push(settleT);
     } else {
-      _topFragVisible = false;
+      _rowsSettled = false;
       rowTargets.forEach(function(rowEl,i) { var t = setTimeout(function() { rowEl.classList.remove("trans-fade"); rowEl.classList.add("trans-fade-out"); rowEl.classList.remove("anim-fade-in"); rowEl.classList.add("anim-fade-out"); }, (rowTargets.length - 1 - i) * 60); animTimers.push(t); });
       var t = setTimeout(function() { header.classList.remove("trans-fade"); header.classList.add("trans-fade-out"); header.classList.remove("anim-fade-in"); header.classList.add("anim-fade-out"); }, rowTargets.length * 60 + 80); animTimers.push(t);
       var hideT = setTimeout(function() {
@@ -566,10 +526,10 @@ function applyAnim() {
     void header.offsetHeight; allTargets.forEach(function(el) { el.style.transition = ""; });
     header.classList.remove("trans-anim-out"); header.classList.add("trans-anim"); header.classList.remove(hideCls); header.classList.add("anim-in");
     rowTargets.forEach(function(rowEl, i) { var t = setTimeout(function() { rowEl.classList.remove("trans-anim-out"); rowEl.classList.add("trans-anim"); rowEl.classList.remove(hideCls); rowEl.classList.add("anim-in"); }, 80 + i * 60); animTimers.push(t); });
-    var topFragT = setTimeout(function() { _topFragVisible = true; renderTicker(); revealCrowns(); }, rowTargets.length * 60 + 80 + 500);
-    animTimers.push(topFragT);
+    var settleT = setTimeout(function() { _rowsSettled = true; renderTicker(); revealCrowns(); }, rowTargets.length * 60 + 80 + 500);
+    animTimers.push(settleT);
   } else {
-    _topFragVisible = false;
+    _rowsSettled = false;
     rowEls.forEach(function(w) { w.style.transition = "none"; });
     rowTargets.forEach(function(rowEl, i) { var t = setTimeout(function() { rowEl.classList.remove("trans-anim"); rowEl.classList.add("trans-anim-out"); void rowEl.offsetHeight; rowEl.classList.remove("anim-in"); rowEl.classList.add(hideCls); }, (rowTargets.length - 1 - i) * 60); animTimers.push(t); });
     var t = setTimeout(function() { header.classList.remove("trans-anim"); header.classList.add("trans-anim-out"); void header.offsetHeight; header.classList.remove("anim-in"); header.classList.add(hideCls); }, rowTargets.length * 60 + 80); animTimers.push(t);
@@ -632,7 +592,7 @@ db.ref("/live-graphics/theme/ticker").on("value", function(snap) {
   if (_h(t.rightBg))       { root.style.setProperty("--col-alive-bg", t.rightBg); root.style.setProperty("--col-elims-bg", t.rightBg); root.style.setProperty("--col-pts-bg", t.rightBg); }
   if (_h(t.endBg))         root.style.setProperty("--col-end-bg", t.endBg);
   if (_h(t.curtainColor))  root.style.setProperty("--curtain-color", t.curtainColor);
-  if (_h(t.topFragColor)) { root.style.setProperty("--top-frag-color", t.topFragColor); console.log("[theme-ticker] applied --top-frag-color =", t.topFragColor, "computed:", getComputedStyle(root).getPropertyValue("--top-frag-color")); } else { console.log("[theme-ticker] t.topFragColor is missing/falsy:", t.topFragColor); }
+  if (_h(t.highlightTeam)) { root.style.setProperty("--highlight-team", t.highlightTeam); }
 });
 
 db.ref("/live-graphics/fonts/config").on("value", function(snap) {
