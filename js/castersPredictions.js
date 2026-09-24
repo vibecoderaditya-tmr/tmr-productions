@@ -10,7 +10,10 @@ function renderSlots(tags, container) {
     if (tags && tags[i]) {
       var tag = tags[i];
       logoEl.innerHTML = '<img src="img/logos/' + tag.toLowerCase() + '.webp" alt="' + tag + '">';
-      tagEl.textContent = tag;
+      tagEl.textContent = "";
+      var tagSpan = document.createElement("span");
+      tagSpan.textContent = tag;
+      tagEl.appendChild(tagSpan);
     } else {
       logoEl.innerHTML = "";
       tagEl.textContent = "";
