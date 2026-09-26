@@ -188,7 +188,7 @@ function renderTicker() {
 
   const activeTags = new Set(entries.map(e => e.tag));
   for (const wrap of rowEls) {
-    if (wrap.dataset.tag && !activeTags.has(wrap.dataset.tag)) delete wrap.dataset.tag;
+    if (wrap.dataset.tag && !activeTags.has(wrap.dataset.tag)) { delete wrap.dataset.tag; delete wrap.dataset.placed; }
   }
   const assigned = new Set();
   for (const wrap of rowEls) if (wrap.dataset.tag) assigned.add(wrap.dataset.tag);
@@ -232,14 +232,18 @@ function renderTicker() {
       wrap.style.display = "";
 
       const newTop = (eIdx * (rowHeight + rowGap)) + "px";
-      if (row.classList.contains("anim-in")) {
-        wrap.style.top = newTop;
-      } else {
-        const prevTransition = wrap.style.transition;
-        wrap.style.transition = "none";
-        wrap.style.top = newTop;
-        void wrap.offsetHeight;
-        wrap.style.transition = prevTransition;
+      if (wrap.style.top !== newTop) {
+        if (wrap.dataset.placed !== "1") {
+          // first placement for this tag: snap, don't glide in from 0
+          const prevTransition = wrap.style.transition;
+          wrap.style.transition = "none";
+          wrap.style.top = newTop;
+          void wrap.offsetHeight;
+          wrap.style.transition = prevTransition;
+          wrap.dataset.placed = "1";
+        } else {
+          wrap.style.top = newTop; // CSS `transition: top` glides the row
+        }
       }
     }
 
@@ -315,7 +319,7 @@ function renderTicker() {
   for (const wrap of rowEls) {
     var tag = wrap.dataset.tag;
     if (!tag) continue;
-    var cd = teamsData[tag];
+    var cd = teamsData && teamsData[tag];
     if (cd && cd.isCrActivated == 1) {
       activeCrownTags.push(tag);
       var crown = rowsContainer.querySelector('.crown-badge[data-tag="' + tag + '"]');
@@ -551,6 +555,7 @@ function resetAnimState() {
     el.classList.remove('anim-hide-left','anim-hide-right','anim-in','anim-fade-in','anim-fade-out','trans-anim','trans-anim-out','trans-fade','trans-fade-out','curtain-flip','flipped');
     el.style.transition = ''; el.style.opacity = '';
   });
+  rowEls.forEach(function(w) { w.style.transition = ''; });
 }
 
 function applyAnim() {
