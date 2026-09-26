@@ -1,4 +1,4 @@
-﻿const firebaseConfig = {
+const firebaseConfig = {
   apiKey:            "AIzaSyC21mdsgyIEqXT7ujFbi0xcVAMRZxxqB1I",
   authDomain:        "tmraditya-1ceb7.firebaseapp.com",
   databaseURL:       "https://tmraditya-1ceb7-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -41,7 +41,7 @@ function cssVarSec(name) {
 }
 
 function osxEnsure(tag, name) {
-  if (!_osxTeams[tag]) _osxTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0, mp: 0, booyah: 0, cr: 0, wcr: 0, rank: 0 };
+  if (!_osxTeams[tag]) _osxTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0, mp: 0, booyah: 0, cr: 0, wcr: 0, rank: 0, rankDiff: 0 };
   else if (name && (!_osxTeams[tag].name || _osxTeams[tag].name === tag)) _osxTeams[tag].name = name;
 }
 
@@ -56,13 +56,14 @@ function osxApplyTeam(node, tag) {
   _osxTeams[tag].wcr = node.wonByCR == 1 ? 1 : 0;
   _osxTeams[tag].booyah = Number(node.booyahs) || 0;
   _osxTeams[tag].rank = Number(node.rank) || 0;
+  _osxTeams[tag].rankDiff = Number(node.rankDiff) || 0;
 }
 
 function osxEntries() {
   return Object.keys(_osxTeams).map(function(tag) {
     var k = _osxTeams[tag].kills || 0;
     var p = _osxTeams[tag].place || 0;
-    return { tag: tag, name: _osxTeams[tag].name, kills: k, place: p, total: k + p, mp: _osxTeams[tag].mp || 0, booyah: _osxTeams[tag].booyah || 0, cr: _osxTeams[tag].cr || 0, wcr: _osxTeams[tag].wcr || 0, rank: Number(_osxTeams[tag].rank) || 0 };
+    return { tag: tag, name: _osxTeams[tag].name, kills: k, place: p, total: k + p, mp: _osxTeams[tag].mp || 0, booyah: _osxTeams[tag].booyah || 0, cr: _osxTeams[tag].cr || 0, wcr: _osxTeams[tag].wcr || 0, rank: Number(_osxTeams[tag].rank) || 0, rankDiff: Number(_osxTeams[tag].rankDiff) || 0 };
   });
 }
 
@@ -79,11 +80,20 @@ function osxFillCol(col, entries, offset, rowsPerCol, timings) {
       var e = entries[idx];
       var place = Math.max(0, e.place);
       var rnk = e.rank > 0 ? e.rank : (idx + 1);
+      var rd = Number(e.rankDiff) || 0;
+      var moveHtml;
+      if (rd > 0) {
+        moveHtml = "<span class=\"osx-move\"><span class=\"osx-arrow osx-arrow-up\">▲</span><span class=\"osx-move-num osx-move-up\">+" + rd + "</span></span>";
+      } else if (rd < 0) {
+        moveHtml = "<span class=\"osx-move\"><span class=\"osx-move-num osx-move-down\">" + rd + "</span><span class=\"osx-arrow osx-arrow-down\">▼</span></span>";
+      } else {
+        moveHtml = "<span class=\"osx-move\"><span class=\"osx-move-num osx-move-flat\">&ndash;</span></span>";
+      }
       var rankHtml = e.wcr === 1
-        ? "<span class=\"osx-rank\"><span class=\"osx-rank-num\"><span class=\"osx-txt\">#" + rnk + "</span></span><img class=\"osx-crown\" src=\"img/wonByCR.webp\" alt=\"\"></span>"
+        ? "<span class=\"osx-rank\">" + moveHtml + "<span class=\"osx-rank-num\"><span class=\"osx-txt\">" + rnk + "</span></span><img class=\"osx-crown\" src=\"img/wonByCR.webp\" alt=\"\"></span>"
         : (e.cr === 1
-          ? "<span class=\"osx-rank\"><span class=\"osx-rank-num\"><span class=\"osx-txt\">#" + rnk + "</span></span><img class=\"osx-crown\" src=\"img/Wcrown.webp\" alt=\"\"></span>"
-          : "<span class=\"osx-rank\"><span class=\"osx-txt\">#" + rnk + "</span></span>");
+          ? "<span class=\"osx-rank\">" + moveHtml + "<span class=\"osx-rank-num\"><span class=\"osx-txt\">" + rnk + "</span></span><img class=\"osx-crown\" src=\"img/Wcrown.webp\" alt=\"\"></span>"
+          : "<span class=\"osx-rank\">" + moveHtml + "<span class=\"osx-txt\">" + rnk + "</span></span>");
       row.innerHTML =
         rankHtml +
         "<div class=\"osx-team\"><div class=\"osx-logo-wrap\"><img class=\"osx-logo\" alt=\"\"></div><span class=\"osx-name\"></span></div>" +
