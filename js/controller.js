@@ -205,7 +205,7 @@ var _osxMatchNum = 0;
 var _osxTeamCountSel = 18;
 
 function osxEnsure(tag, name) {
-  if (!_osxTeams[tag]) _osxTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0, rank: 0 };
+  if (!_osxTeams[tag]) _osxTeams[tag] = { tag: tag, name: name || tag, kills: 0, place: 0, rank: 0, rankDiff: 0 };
   else if (name && (!_osxTeams[tag].name || _osxTeams[tag].name === tag)) _osxTeams[tag].name = name;
 }
 
@@ -217,6 +217,7 @@ function osxApplyTeam(node, tag) {
   if (k) _osxTeams[tag].kills = k;
   if (p) _osxTeams[tag].place = p;
   _osxTeams[tag].rank = Number(node.rank) || 0;
+  _osxTeams[tag].rankDiff = Number(node.rankDiff) || 0;
 }
 
 function renderOsxRef() {
@@ -226,7 +227,7 @@ function renderOsxRef() {
   var entries = Object.keys(_osxTeams).map(function(tag) {
     var k = _osxTeams[tag].kills || 0;
     var p = _osxTeams[tag].place || 0;
-    return { tag: tag, name: _osxTeams[tag].name, kills: k, place: p, total: k + p, rank: Number(_osxTeams[tag].rank) || 0 };
+    return { tag: tag, name: _osxTeams[tag].name, kills: k, place: p, total: k + p, rank: Number(_osxTeams[tag].rank) || 0, rankDiff: Number(_osxTeams[tag].rankDiff) || 0 };
   });
   if (!entries.length) {
     statusEl.textContent = "No team data";
@@ -247,7 +248,11 @@ function renderOsxRef() {
     var e = entries[i];
     var place = Math.max(0, e.place);
     var rnk = e.rank > 0 ? e.rank : (i + 1);
-    html += '<div class="osx-ref-row"><span>' + rnk + '</span><span class="osx-ref-team">' + e.tag + '</span><span>' + e.kills + '</span><span>' + place + '</span><span>' + e.total + '</span></div>';
+    var rd = Number(e.rankDiff) || 0;
+    var diffTxt = rd > 0
+      ? ' <span style="color:#22c55e">+' + rd + '</span>'
+      : (rd < 0 ? ' <span style="color:#ef4444">' + rd + '</span>' : ' <span style="color:#9ca3af">&ndash;</span>');
+    html += '<div class="osx-ref-row"><span>' + rnk + diffTxt + '</span><span class="osx-ref-team">' + e.tag + '</span><span>' + e.kills + '</span><span>' + place + '</span><span>' + e.total + '</span></div>';
   }
   refEl.innerHTML = html;
 }

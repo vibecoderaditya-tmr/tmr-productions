@@ -229,6 +229,59 @@
 
 .osx-row .osx-rank {
   position: relative;
+  gap: 6px;
+  font-size: 1.12em;
+}
+
+/* rank movement indicator (from matches/Overall/teams/{tag}/rankDiff) */
+.osx-move {
+  flex: 0 0 26px;
+  width: 26px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 2px;
+}
+
+.osx-move > span {
+  width: 100%;
+  text-align: center;
+}
+
+/* fixed-width rank number so the movement slot sits at the same x in every row
+   (single-digit and double-digit ranks would otherwise shift the centered group) */
+.osx-rank-num,
+.osx-rank > .osx-txt {
+  flex: 0 0 34px;
+  width: 34px;
+  text-align: left;
+}
+
+.osx-move-num {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.osx-move-up { color: #22c55e; }
+.osx-move-down { color: #ef4444; }
+.osx-move-flat { color: #9ca3af; }
+
+.osx-arrow {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.osx-arrow-up {
+  color: #22c55e;
+}
+
+.osx-arrow-down {
+  color: #ef4444;
 }
 
 .osx-crown {
