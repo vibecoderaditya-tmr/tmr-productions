@@ -213,8 +213,9 @@
 
 </div>
 
+<script src="js/config.js"></script>
 <script>
-var OPERATOR_PIN = "6558";
+var OPERATOR_PIN = window.TMR_CONFIG.operatorPin;
 
 document.getElementById("passcode-submit").onclick = function() {
   var val = document.getElementById("passcode-input").value.trim();

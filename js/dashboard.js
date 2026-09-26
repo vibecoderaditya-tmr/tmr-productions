@@ -1,14 +1,6 @@
-var firebaseConfig = {
-  apiKey:            "AIzaSyC21mdsgyIEqXT7ujFbi0xcVAMRZxxqB1I",
-  authDomain:        "tmraditya-1ceb7.firebaseapp.com",
-  databaseURL:       "https://tmraditya-1ceb7-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:         "tmraditya-1ceb7",
-  storageBucket:     "tmraditya-1ceb7.firebasestorage.app",
-  messagingSenderId: "317037791388",
-  appId:             "1:317037791388:web:755b5a18bb77aa140a4559"
-};
+var firebaseConfig = window.TMR_CONFIG.firebase;
 
-var OPERATOR_PIN = "6558";
+var OPERATOR_PIN = window.TMR_CONFIG.operatorPin;
 
 firebase.initializeApp(firebaseConfig);
 var db = firebase.database();

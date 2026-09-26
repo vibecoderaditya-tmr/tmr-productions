@@ -1,6 +1,8 @@
 ignore/
 tmr.py
 serviceAccountKey.json
+.env
+js/config.js
 dist/
 build/
 main.py
