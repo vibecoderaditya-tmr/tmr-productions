@@ -82,6 +82,7 @@ let matchTeams = {};
 let prevElims = {};
 let prevPts   = {};
 let _rowsSettled = false;
+let ptsHidden = true;
 
 let currentObservedTag = null;
 let lastEntries = [];
@@ -156,20 +157,31 @@ function renderTicker() {
     return {
       tag:  tag,
       name: (teamsData && teamsData[tag] && teamsData[tag].teamName) || (liveData[tag] && liveData[tag]["4_teamName"]) || (matchTeams[tag] && matchTeams[tag].teamName) || tag,
-      pts:  Number(teamsData && teamsData[tag] && teamsData[tag].totalScore) || 0
+      pts:  Number(teamsData && teamsData[tag] && teamsData[tag].totalScore) || 0,
+      elims: Number(liveData[tag] && liveData[tag]["5_totalKills"]) || 0,
+      alive: Number(liveData[tag] && liveData[tag]["3_playersAlive"]) || 0
     };
   }
-  function byPts(a, b) { return b.pts - a.pts; }
-  var liveEntries = Object.keys(liveData || {}).filter(isLiveTeam).map(toEntry).sort(byPts).slice(0, NUM_ROWS);
+  function byPts(a, b) {
+    if (b.pts !== a.pts) return b.pts - a.pts;
+    if (b.elims !== a.elims) return b.elims - a.elims;
+    return b.alive - a.alive;
+  }
+  function byElims(a, b) {
+    if (b.elims !== a.elims) return b.elims - a.elims;
+    return b.pts - a.pts;
+  }
+  var sortFn = ptsHidden ? byElims : byPts;
+  var liveEntries = Object.keys(liveData || {}).filter(isLiveTeam).map(toEntry).sort(sortFn).slice(0, NUM_ROWS);
   var have = {};
   liveEntries.forEach(function(e) { have[e.tag] = true; });
   var fillerEntries = [];
   if (liveEntries.length < NUM_ROWS) {
     fillerEntries = Object.keys(matchTeams || {}).filter(function(tag) {
       return !have[tag] && matchTeams[tag] && typeof matchTeams[tag] === "object";
-    }).map(toEntry).sort(byPts).slice(0, NUM_ROWS - liveEntries.length);
+    }).map(toEntry).sort(sortFn).slice(0, NUM_ROWS - liveEntries.length);
   }
-  let entries = liveEntries.concat(fillerEntries).sort(byPts);
+  let entries = liveEntries.concat(fillerEntries).sort(sortFn);
 
   const rowHeight = 40;
   const rowGap    = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--row-gap')) || 0;
@@ -380,8 +392,10 @@ db.ref("/live-graphics/status").on("value", snap => {
   const box    = document.querySelector(".ticker-box");
   const header = document.querySelector(".ticker-header");
   const hide = val !== "show";
+  ptsHidden = hide;
   box.classList.toggle("pts-hidden", hide);
   header.classList.toggle("pts-hidden", hide);
+  renderTicker();
 });
 
 let animDirection = "left";
