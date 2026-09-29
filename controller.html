@@ -50,6 +50,11 @@
         <div class="btn-grid btn-grid-1">
           <button class="ctrl-btn" id="btn-pts-toggle" onclick="togglePts()">PTS: SHOWN</button>
         </div>
+        <div class="section-label" style="margin-top:8px">Ticker Highlight</div>
+        <select class="ctrl-select" id="ticker-highlight-select" onchange="setTickerHighlight(this.value)">
+          <option value="observed">Observing</option>
+          <option value="alternate">Alternate</option>
+        </select>
       </div>
 
       <div class="ctrl-section">
