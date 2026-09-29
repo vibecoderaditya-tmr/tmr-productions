@@ -119,6 +119,7 @@ function getTopPtsTag(entries) {
   var best = null;
   for (var i = 0; i < entries.length; i++) {
     var e = entries[i];
+    if (!(e.alive > 0)) continue;
     if (!best ||
         e.pts > best.pts ||
         (e.pts === best.pts && e.elims > best.elims) ||
@@ -131,6 +132,7 @@ function getTopElimsTag(entries) {
   var best = null;
   for (var j = 0; j < entries.length; j++) {
     var e2 = entries[j];
+    if (!(e2.alive > 0)) continue;
     if (!best ||
         e2.elims > best.elims ||
         (e2.elims === best.elims && e2.pts > best.pts) ||
