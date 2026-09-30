@@ -1,0 +1,91 @@
+// TMR landing data — edit this file to change offerings, pricing, contact.
+// Screenshots: drop 16:9 .webp files into img/showcase/<slug>.webp
+// (missing files automatically fall back to a styled name tile).
+var DISCORD_URL = "https://discord.gg/YOUR_INVITE";
+
+var OFFERINGS = [
+  { slug: "live-ticker", name: "Alive <span>Status</span>", tag: "Live Ticker", demo: "live-ticker.html",
+    feats: ["Real-time alive & elimination tracking", "Auto-sorting animated rows", "Observer + alternate highlights"] },
+  { slug: "ospt", name: "Overall <span>Standings</span>", tag: "Points Table", demo: "osPt.html",
+    feats: ["12 / 18 team two-sided layouts", "Rank-movement indicators", "Map-wise booyah strip"] },
+  { slug: "permatchpt", name: "Per Match <span>Points</span>", tag: "Points Table", demo: "perMatchPt.html",
+    feats: ["Match-wise leaderboard", "Booyah top box", "Smart total tie-breakers"] },
+  { slug: "winner", name: "Champion <span>Winner</span>", tag: "Match End", demo: "winner.html",
+    feats: ["Winning team showcase", "Player stats & contribution bars", "Auto MVP badge"] },
+  { slug: "hud", name: "HUD <span>Overlay</span>", tag: "In-Game", demo: "hud.html",
+    feats: ["Killfeed + achievements", "Live match info strip", "Caster-friendly layout"] },
+  { slug: "caster-predictions", name: "Caster <span>Predictions</span>", tag: "Pre-Show", demo: "castersPredictions.html",
+    feats: ["Caster pick cards", "Team logos + tags", "Prediction reveals"] },
+  { slug: "team-stats", name: "Team <span>Stats</span>", tag: "Analysis", demo: "teamStats.html",
+    feats: ["Booyah team deep-dive", "Match-wise breakdowns", "Broadcast-ready styling"] },
+  { slug: "random-map", name: "Random <span>Map</span>", tag: "Utility", demo: "randomMap.html",
+    feats: ["Fullscreen map randomizer", "OBS browser-source ready", "One-click re-roll"] }
+];
+
+var PLANS = [
+  { name: "Single Event", price: "\u20B9X,XXX", per: "per event", hot: false,
+    feats: ["All overlays, one tournament", "Setup walkthrough", "Match-day support"] },
+  { name: "Monthly", price: "\u20B9X,XXX", per: "per month", hot: true,
+    feats: ["Everything in Single Event", "Multiple tournaments", "Priority support"] },
+  { name: "Custom", price: "\u20B9X,XXX", per: "tailored", hot: false,
+    feats: ["Seasons & leagues", "Custom branding", "Dedicated support"] }
+];
+
+function shotHTML(o) {
+  return '<div class="shot">' +
+    '<div class="shot-fallback">' + o.name.replace(/<[^>]*>/g, "") + '</div>' +
+    '<img src="img/showcase/' + o.slug + '.webp" alt="' + o.name.replace(/<[^>]*>/g, "") + '" loading="lazy" onerror="this.classList.add(\'missing\')">' +
+  '</div>';
+}
+
+function renderOfferings() {
+  var grid = document.getElementById("offer-grid");
+  if (!grid) return;
+  var html = "";
+  for (var i = 0; i < OFFERINGS.length; i++) {
+    var o = OFFERINGS[i];
+    html += '<a class="card" href="' + o.demo + '">' +
+      shotHTML(o) +
+      '<div class="card-body">' +
+        '<div class="card-tag">' + o.tag + '</div>' +
+        '<div class="card-title">' + o.name + '</div>' +
+        '<ul class="card-feats">' +
+          '<li>' + o.feats[0] + '</li>' +
+          '<li>' + o.feats[1] + '</li>' +
+          '<li>' + o.feats[2] + '</li>' +
+        '</ul>' +
+        '<div class="card-demo">Open live demo \u27F6</div>' +
+      '</div>' +
+    '</a>';
+  }
+  grid.innerHTML = html;
+}
+
+function renderPlans() {
+  var wrap = document.getElementById("plan-grid");
+  if (!wrap) return;
+  var html = "";
+  for (var i = 0; i < PLANS.length; i++) {
+    var p = PLANS[i];
+    html += '<div class="plan' + (p.hot ? ' hot' : '') + '">' +
+      '<div class="plan-name">' + p.name + '</div>' +
+      '<div class="plan-price">' + p.price + '</div>' +
+      '<div class="plan-per">' + p.per + '</div>' +
+      '<ul class="plan-feats">' +
+        '<li>' + p.feats[0] + '</li>' +
+        '<li>' + p.feats[1] + '</li>' +
+        '<li>' + p.feats[2] + '</li>' +
+      '</ul>' +
+    '</div>';
+  }
+  wrap.innerHTML = html;
+}
+
+function wireContact() {
+  var btns = document.querySelectorAll("[data-discord]");
+  for (var i = 0; i < btns.length; i++) btns[i].href = DISCORD_URL;
+}
+
+renderOfferings();
+renderPlans();
+wireContact();
