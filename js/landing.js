@@ -44,7 +44,7 @@ function renderOfferings() {
   var html = "";
   for (var i = 0; i < OFFERINGS.length; i++) {
     var o = OFFERINGS[i];
-    html += '<a class="card" href="' + o.demo + '">' +
+    html += '<a class="card">' +
       shotHTML(o) +
       '<div class="card-body">' +
         '<div class="card-tag">' + o.tag + '</div>' +
