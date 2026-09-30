@@ -1,0 +1,416 @@
+/* TMR landing — public showcase. Same Barlow Condensed + DM Mono system as the hub. */
+:root {
+  --bg:     #2e3e4d;
+  --panel:  #4a5d6b;
+  --accent: #62747d;
+  --light:  #dde8ef;
+  --mid:    #b0c4cf;
+  --white:  #f0f6fa;
+  --gold:   #d4af37;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  font-family: 'Barlow Condensed', sans-serif;
+  color: var(--white);
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(202,220,230,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(202,220,230,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  width: 70%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+}
+
+/* --- top bar --- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.brand img { width: 34px; height: 34px; object-fit: contain; }
+
+.nav { display: flex; align-items: center; gap: 22px; }
+
+.nav a {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mid);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav a:hover { color: var(--white); }
+
+.nav a.ops {
+  border: 1px solid rgba(202,220,230,0.25);
+  border-radius: 6px;
+  padding: 8px 14px;
+}
+
+/* --- hero --- */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 30px 0 10px;
+}
+
+.hero-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: var(--mid);
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-size: 4.2rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 0.95;
+}
+
+.hero h1 span { color: var(--light); }
+
+.hero-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  max-width: 640px;
+  line-height: 1.8;
+}
+
+.cta-row { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
+
+.btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 13px 26px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  color: var(--white);
+  background: rgba(74, 93, 107, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.btn:hover { transform: translateY(-2px); box-shadow: 0 0 16px rgba(202,220,230,0.2); }
+
+.btn.gold {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #1c1c1c;
+}
+
+/* --- sections --- */
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: var(--mid);
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+
+.section-head::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(202,220,230,0.12);
+}
+
+/* --- offering cards --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.card {
+  background: rgba(74, 93, 107, 0.25);
+  border: 1px solid rgba(202,220,230,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--white);
+  transition: border-color 0.3s, background 0.3s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  border-color: rgba(202,220,230,0.28);
+  background: rgba(74, 93, 107, 0.4);
+  transform: translateY(-3px);
+}
+
+.shot {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #22303c;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(202,220,230,0.08);
+}
+
+.shot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.shot img.missing { display: none; }
+
+.shot-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(221,232,239,0.35);
+}
+
+.card-body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 8px; }
+
+.card-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--mid);
+  text-transform: uppercase;
+}
+
+.card-title {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.card-title span { color: var(--light); }
+
+.card-feats {
+  list-style: none;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  line-height: 1.9;
+  margin-top: 4px;
+}
+
+.card-feats li::before { content: '▸ '; color: var(--gold); }
+
+.card-demo {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--light);
+  margin-top: 6px;
+}
+
+/* --- pricing --- */
+.plans {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.plan {
+  background: rgba(74, 93, 107, 0.25);
+  border: 1px solid rgba(202,220,230,0.08);
+  border-radius: 8px;
+  padding: 28px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  text-align: center;
+}
+
+.plan.hot {
+  border-color: rgba(212,175,55,0.5);
+  background: rgba(74, 93, 107, 0.4);
+}
+
+.plan-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: var(--mid);
+  text-transform: uppercase;
+}
+
+.plan-price { font-size: 3rem; font-weight: 800; line-height: 1; }
+
+.plan-price span { font-size: 1.4rem; color: var(--mid); }
+
+.plan-per {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.plan-feats {
+  list-style: none;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  line-height: 2;
+  margin: 8px 0 4px;
+}
+
+/* --- projects --- */
+.plist {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.plist .proj.beyond { display: none; }
+.plist.open .proj.beyond { display: flex; }
+
+.more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.more-wrap .btn { cursor: pointer; }
+
+.proj {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 22px;
+  background: rgba(74, 93, 107, 0.25);
+  border: 1px solid rgba(202,220,230,0.08);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--white);
+  transition: border-color 0.3s, background 0.3s, transform 0.2s;
+}
+
+.proj:hover {
+  border-color: rgba(202,220,230,0.28);
+  background: rgba(74, 93, 107, 0.4);
+  transform: translateX(4px);
+}
+
+.proj-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--mid);
+}
+
+.proj-play { color: var(--gold); font-size: 0.9rem; }
+
+.proj-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.proj-link {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.proj[href^="http"] .proj-link { color: var(--gold); }
+
+/* --- contact / footer --- */
+.contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.contact p {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+}
+
+.footer {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .wrap { width: 92%; }
+  .grid, .plans, .plist { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 2.8rem; }
+}

@@ -486,6 +486,17 @@ ptsVisRef.on("value", function(snap) {
   if (btn) btn.textContent = ptsVisState === "show" ? "HIDE" : "SHOW";
 });
 
+function setTickerHighlight(v) {
+  lgRef.child("tickerHighlight").set(v === "alternate" ? "alternate" : "observed");
+}
+window.setTickerHighlight = setTickerHighlight;
+
+db.ref("/live-graphics/tickerHighlight").on("value", function(snap) {
+  var v = snap.val() === "alternate" ? "alternate" : "observed";
+  var sel = document.getElementById("ticker-highlight-select");
+  if (sel) sel.value = v;
+});
+
 
 var mapStatusRef  = db.ref("/maprand/status");
 var mapCommandRef = db.ref("/maprand/command");

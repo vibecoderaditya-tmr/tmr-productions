@@ -83,6 +83,7 @@ let prevElims = {};
 let prevPts   = {};
 let _rowsSettled = false;
 let ptsHidden = true;
+let tickerHighlightMode = "observed";
 
 let currentObservedTag = null;
 let lastEntries = [];
@@ -114,9 +115,42 @@ function getObservedTag(entries) {
   return (want && roster[want]) ? want : null;
 }
 
+function getTopPtsTag(entries) {
+  var best = null;
+  for (var i = 0; i < entries.length; i++) {
+    var e = entries[i];
+    if (!(e.alive > 0)) continue;
+    if (!best ||
+        e.pts > best.pts ||
+        (e.pts === best.pts && e.elims > best.elims) ||
+        (e.pts === best.pts && e.elims === best.elims && e.alive > best.alive)) best = e;
+  }
+  return best ? best.tag : null;
+}
+
+function getTopElimsTag(entries) {
+  var best = null;
+  for (var j = 0; j < entries.length; j++) {
+    var e2 = entries[j];
+    if (!(e2.alive > 0)) continue;
+    if (!best ||
+        e2.elims > best.elims ||
+        (e2.elims === best.elims && e2.pts > best.pts) ||
+        (e2.elims === best.elims && e2.pts === best.pts && e2.alive > best.alive)) best = e2;
+  }
+  return best ? best.tag : null;
+}
+
 function applyObservedHighlight(entries) {
   lastEntries = entries;
-  var tag = _rowsSettled ? getObservedTag(entries) : null;
+  var tag = null;
+  if (_rowsSettled) {
+    if (tickerHighlightMode === "alternate") {
+      tag = ptsHidden ? getTopPtsTag(entries) : getTopElimsTag(entries);
+    } else {
+      tag = getObservedTag(entries);
+    }
+  }
   if (tag === currentObservedTag) return;
   currentObservedTag = tag;
   for (const wrap of rowEls) {
@@ -400,6 +434,11 @@ db.ref("/live-graphics/status").on("value", snap => {
   box.classList.toggle("pts-hidden", hide);
   header.classList.toggle("pts-hidden", hide);
   renderTicker();
+});
+
+db.ref("/live-graphics/tickerHighlight").on("value", snap => {
+  tickerHighlightMode = snap.val() === "alternate" ? "alternate" : "observed";
+  if (lastEntries.length) applyObservedHighlight(lastEntries);
 });
 
 let animDirection = "left";
