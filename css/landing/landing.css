@@ -320,10 +320,21 @@ body::before {
 
 /* --- projects --- */
 .plist {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
+
+.plist .proj.beyond { display: none; }
+.plist.open .proj.beyond { display: flex; }
+
+.more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.more-wrap .btn { cursor: pointer; }
 
 .proj {
   display: flex;
@@ -400,6 +411,6 @@ body::before {
 
 @media (max-width: 900px) {
   .wrap { width: 92%; }
-  .grid, .plans { grid-template-columns: 1fr; }
+  .grid, .plans, .plist { grid-template-columns: 1fr; }
   .hero h1 { font-size: 2.8rem; }
 }

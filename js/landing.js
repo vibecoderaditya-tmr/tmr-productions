@@ -109,7 +109,7 @@ function renderProjects() {
     var p = PROJECTS[i];
     var num = (i + 1 < 10 ? "0" + (i + 1) : "" + (i + 1));
     var live = p.link && p.link !== "#";
-    html += '<a class="proj" href="' + p.link + '"' + (live ? ' target="_blank" rel="noopener"' : '') + '>' +
+    html += '<a class="proj' + (i >= 6 ? ' beyond' : '') + '" href="' + p.link + '"' + (live ? ' target="_blank" rel="noopener"' : '') + '>' +
       '<span class="proj-num">' + num + '</span>' +
       '<span class="proj-play">\u25B6</span>' +
       '<span class="proj-title">' + p.title + '</span>' +
@@ -117,6 +117,22 @@ function renderProjects() {
     '</a>';
   }
   list.innerHTML = html;
+  var moreBtn = document.getElementById("proj-more");
+  if (moreBtn) {
+    if (PROJECTS.length <= 6) { moreBtn.style.display = "none"; }
+    else {
+      moreBtn.style.display = "";
+      moreBtn.textContent = list.classList.contains("open") ? "SEE LESS" : "SEE MORE (" + (PROJECTS.length - 6) + " MORE)";
+    }
+  }
+}
+
+function toggleProjects() {
+  var list = document.getElementById("project-list");
+  var moreBtn = document.getElementById("proj-more");
+  if (!list || !moreBtn) return;
+  var open = list.classList.toggle("open");
+  moreBtn.textContent = open ? "SEE LESS" : "SEE MORE (" + (PROJECTS.length - 6) + " MORE)";
 }
 
 renderOfferings();
