@@ -86,6 +86,40 @@ function wireContact() {
   for (var i = 0; i < btns.length; i++) btns[i].href = DISCORD_URL;
 }
 
+// Past work, in stream-time order (latest first). Replace link:"#" with
+// the YouTube URLs when ready — display order follows array order.
+var PROJECTS = [
+  { title: "STREAM 1", link: "#" },
+  { title: "STREAM 2", link: "#" },
+  { title: "STREAM 3", link: "#" },
+  { title: "STREAM 4", link: "#" },
+  { title: "STREAM 5", link: "#" },
+  { title: "STREAM 6", link: "#" },
+  { title: "STREAM 7", link: "#" },
+  { title: "STREAM 8", link: "#" },
+  { title: "STREAM 9", link: "#" },
+  { title: "STREAM 10", link: "#" }
+];
+
+function renderProjects() {
+  var list = document.getElementById("project-list");
+  if (!list) return;
+  var html = "";
+  for (var i = 0; i < PROJECTS.length; i++) {
+    var p = PROJECTS[i];
+    var num = (i + 1 < 10 ? "0" + (i + 1) : "" + (i + 1));
+    var live = p.link && p.link !== "#";
+    html += '<a class="proj" href="' + p.link + '"' + (live ? ' target="_blank" rel="noopener"' : '') + '>' +
+      '<span class="proj-num">' + num + '</span>' +
+      '<span class="proj-play">\u25B6</span>' +
+      '<span class="proj-title">' + p.title + '</span>' +
+      '<span class="proj-link">' + (live ? 'WATCH' : 'LINK SOON') + '</span>' +
+    '</a>';
+  }
+  list.innerHTML = html;
+}
+
 renderOfferings();
 renderPlans();
+renderProjects();
 wireContact();

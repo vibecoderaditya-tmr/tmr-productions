@@ -318,6 +318,59 @@ body::before {
   margin: 8px 0 4px;
 }
 
+/* --- projects --- */
+.plist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.proj {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 22px;
+  background: rgba(74, 93, 107, 0.25);
+  border: 1px solid rgba(202,220,230,0.08);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--white);
+  transition: border-color 0.3s, background 0.3s, transform 0.2s;
+}
+
+.proj:hover {
+  border-color: rgba(202,220,230,0.28);
+  background: rgba(74, 93, 107, 0.4);
+  transform: translateX(4px);
+}
+
+.proj-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--mid);
+}
+
+.proj-play { color: var(--gold); font-size: 0.9rem; }
+
+.proj-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.proj-link {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.proj[href^="http"] .proj-link { color: var(--gold); }
+
 /* --- contact / footer --- */
 .contact {
   display: flex;
