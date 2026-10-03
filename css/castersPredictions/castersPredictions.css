@@ -49,7 +49,7 @@ body {
 .cp-top {
   display: flex;
   width: 100%;
-  height: 140px;
+  height: 160px;
   background: var(--box-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -85,7 +85,7 @@ body {
 
 .cp-slot {
   width: 120px;
-  height: 120px;
+  height: 130px;
   background: rgba(0,212,255,0.08);
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -95,7 +95,8 @@ body {
 }
 
 .cp-slot-logo {
-  height: 100px;
+  flex: 1;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -109,7 +110,7 @@ body {
 }
 
 .cp-slot-tag {
-  height: 20px;
+  height: 23px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,4 +120,10 @@ body {
   font-weight: 600;
   letter-spacing: 1px;
   line-height: 1;
+}
+
+.cp-slot-tag span {
+  display: inline-block;
+  line-height: 1;
+  padding-top: 2px;
 }
