@@ -9,3 +9,4 @@ version.txt
 *.spec
 __pycache__
 *.py
+*.md
