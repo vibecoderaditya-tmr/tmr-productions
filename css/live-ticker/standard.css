@@ -114,7 +114,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 28px;
   height: var(--row-height);
   margin-top: var(--row-gap);
   background: var(--header-bg);
@@ -135,7 +135,12 @@ html, body {
   flex-shrink: 0;
 }
 
-.ticker-summary > span:not(.sum-box) {
+.ticker-summary .sum-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.ticker-summary .sum-group > span:not(.sum-box) {
   width: 92px;
   text-align: center;
 }
