@@ -142,7 +142,7 @@ html, body {
 }
 .ticker-summary .sum-group > span:not(.sum-box) {
   width: 92px;
-  text-align: center;
+  text-align: left;
 }
 
 .ticker-summary .sum-alive { background: var(--bar-alive); }
