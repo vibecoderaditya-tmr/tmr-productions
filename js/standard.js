@@ -61,6 +61,7 @@ const rowEls = Array.from(document.querySelectorAll('.row-wrap'))
   .sort((a, b) => Number(a.dataset.slot) - Number(b.dataset.slot));
 
 function innerRow(wrap) { return wrap.querySelector('.ticker-row'); }
+function summaryBox() { return document.querySelector(".ticker-summary"); }
 
 const firebaseConfig = {
   apiKey:            "AIzaSyC21mdsgyIEqXT7ujFbi0xcVAMRZxxqB1I",
@@ -513,6 +514,12 @@ function curtainIn() {
   header.classList.remove("anim-hide-left", "anim-hide-right", "anim-in", "trans-anim", "trans-anim-out", "flipped");
   header.classList.add("curtain-flip");
   header.style.display = "";
+  const summaryIn = summaryBox();
+  if (summaryIn) {
+    summaryIn.classList.remove("anim-hide-left", "anim-hide-right", "anim-in", "trans-anim", "trans-anim-out", "flipped");
+    summaryIn.classList.add("curtain-flip");
+    summaryIn.style.display = "";
+  }
   const wrap = buildCurtain(box);
   void wrap.offsetHeight;
   wrap.classList.add("strips-grow");
@@ -537,6 +544,10 @@ function curtainIn() {
     visibleRows.forEach((w, i) => {
       setTimeout(() => innerRow(w).classList.add("flipped"), i * 60);
     });
+    const summaryFlip = summaryBox();
+    if (summaryFlip) {
+      setTimeout(() => summaryFlip.classList.add("flipped"), visibleRows.length * 60);
+    }
     setTimeout(() => {
       _rowsSettled = true;
       renderTicker();
@@ -557,6 +568,11 @@ function curtainOut() {
       innerRow(w).classList.remove("anim-hide-left", "anim-hide-right", "anim-in", "trans-anim", "trans-anim-out");
       w.style.display = "none";
     });
+    const summaryFirst = summaryBox();
+    if (summaryFirst) {
+      summaryFirst.classList.remove("anim-hide-left", "anim-hide-right", "anim-in", "trans-anim", "trans-anim-out", "curtain-flip", "flipped");
+      summaryFirst.style.display = "none";
+    }
     return;
   }
   const box    = document.querySelector(".ticker-box");
@@ -573,6 +589,11 @@ function curtainOut() {
     });
     header.classList.remove("curtain-flip", "flipped");
     header.style.display = "none";
+    const summaryOut = summaryBox();
+    if (summaryOut) {
+      summaryOut.classList.remove("curtain-flip", "flipped");
+      summaryOut.style.display = "none";
+    }
     const strips = wrap.querySelectorAll(".curtain-strip");
     let maxDropFinish = 0;
     strips.forEach(strip => {
@@ -608,7 +629,7 @@ function unloadCurtainCSS() {
 function resetAnimState() {
   animTimers.forEach(function(t) { clearTimeout(t); }); animTimers = [];
   document.querySelectorAll('.curtain-wrap').forEach(function(w) { w.remove(); });
-  var all = [document.querySelector('.ticker-header')].concat(rowEls.map(function(w) { return innerRow(w); })).filter(Boolean);
+  var all = [document.querySelector('.ticker-header'), summaryBox()].concat(rowEls.map(function(w) { return innerRow(w); })).filter(Boolean);
   all.forEach(function(el) {
     el.classList.remove('anim-hide-left','anim-hide-right','anim-in','anim-fade-in','anim-fade-out','trans-anim','trans-anim-out','trans-fade','trans-fade-out','curtain-flip','flipped');
     el.style.transition = ''; el.style.opacity = '';
@@ -640,22 +661,39 @@ function applyAnim() {
     if (animState === "in") {
       header.style.display = "";
       rowEls.forEach(function(w) { w.style.display = ""; });
+      var summaryFade = summaryBox();
+      if (summaryFade) summaryFade.style.display = "";
       wrapRows = rowEls.slice().sort(function(a,b) { return (parseFloat(a.style.top)||0) - (parseFloat(b.style.top)||0); });
       rowTargets = wrapRows.map(function(w) { return innerRow(w); });
       allTargets = [header].concat(rowTargets).filter(Boolean);
       allTargets.forEach(function(el) { el.style.transition = "none"; el.classList.remove("anim-fade-in","anim-fade-out"); el.classList.add("anim-fade-out"); });
+      if (summaryFade) { summaryFade.style.transition = "none"; summaryFade.classList.remove("anim-fade-in","anim-fade-out"); summaryFade.classList.add("anim-fade-out"); }
       void header.offsetHeight; allTargets.forEach(function(el) { el.style.transition = ""; });
+      if (summaryFade) summaryFade.style.transition = "";
       header.classList.remove("trans-fade-out"); header.classList.add("trans-fade"); header.classList.remove("anim-fade-out"); header.classList.add("anim-fade-in");
       rowTargets.forEach(function(rowEl,i) { var t = setTimeout(function() { rowEl.classList.remove("trans-fade-out"); rowEl.classList.add("trans-fade"); rowEl.classList.remove("anim-fade-out"); rowEl.classList.add("anim-fade-in"); }, 80 + i * 60); animTimers.push(t); });
+      if (summaryFade) {
+        var sft = setTimeout(function() { summaryFade.classList.remove("trans-fade-out"); summaryFade.classList.add("trans-fade"); summaryFade.classList.remove("anim-fade-out"); summaryFade.classList.add("anim-fade-in"); }, 80 + rowTargets.length * 60);
+        animTimers.push(sft);
+      }
       var settleT = setTimeout(function() { _rowsSettled = true; renderTicker(); revealCrowns(); }, rowTargets.length * 60 + 80 + 500);
       animTimers.push(settleT);
     } else {
       _rowsSettled = false;
+      var summaryFadeOut = summaryBox();
+      if (summaryFadeOut) {
+        summaryFadeOut.classList.remove("trans-fade");
+        summaryFadeOut.classList.add("trans-fade-out");
+        summaryFadeOut.classList.remove("anim-fade-in");
+        summaryFadeOut.classList.add("anim-fade-out");
+      }
       rowTargets.forEach(function(rowEl,i) { var t = setTimeout(function() { rowEl.classList.remove("trans-fade"); rowEl.classList.add("trans-fade-out"); rowEl.classList.remove("anim-fade-in"); rowEl.classList.add("anim-fade-out"); }, (rowTargets.length - 1 - i) * 60); animTimers.push(t); });
       var t = setTimeout(function() { header.classList.remove("trans-fade"); header.classList.add("trans-fade-out"); header.classList.remove("anim-fade-in"); header.classList.add("anim-fade-out"); }, rowTargets.length * 60 + 80); animTimers.push(t);
       var hideT = setTimeout(function() {
         document.querySelector(".ticker-header").style.display = "none";
         rowEls.forEach(function(w) { w.style.display = "none"; });
+        var summaryHide = summaryBox();
+        if (summaryHide) summaryHide.style.display = "none";
       }, rowTargets.length * 60 + 80 + 600);
       animTimers.push(hideT);
     }
@@ -667,27 +705,44 @@ function applyAnim() {
   var wrapRows = rowEls.filter(function(w) { return w.style.display !== "none"; }).slice().sort(function(a,b) { return (parseFloat(a.style.top)||0) - (parseFloat(b.style.top)||0); });
   var headerTarget = header; var rowTargets = wrapRows.map(function(w) { return innerRow(w); }); var allTargets = [headerTarget].concat(rowTargets);
   var isIn = animState === "in"; var hideCls = hideClassFor(animDirection); var otherHideCls = hideCls === "anim-hide-left" ? "anim-hide-right" : "anim-hide-left";
-  if (isIn) {
-    header.style.display = "";
-    rowEls.forEach(function(w) { w.style.display = ""; });
-    wrapRows = rowEls.slice().sort(function(a,b) { return (parseFloat(a.style.top)||0) - (parseFloat(b.style.top)||0); });
-    rowTargets = wrapRows.map(function(w) { return innerRow(w); });
-    allTargets = [headerTarget].concat(rowTargets);
-    allTargets.forEach(function(el) { el.style.transition = "none"; el.classList.remove("anim-in", otherHideCls, hideCls); el.classList.add(hideCls); });
-    void header.offsetHeight; allTargets.forEach(function(el) { el.style.transition = ""; });
+    if (isIn) {
+      header.style.display = "";
+      rowEls.forEach(function(w) { w.style.display = ""; });
+      var summaryDef = summaryBox();
+      if (summaryDef) summaryDef.style.display = "";
+      wrapRows = rowEls.slice().sort(function(a,b) { return (parseFloat(a.style.top)||0) - (parseFloat(b.style.top)||0); });
+      rowTargets = wrapRows.map(function(w) { return innerRow(w); });
+      allTargets = [headerTarget].concat(rowTargets);
+      allTargets.forEach(function(el) { el.style.transition = "none"; el.classList.remove("anim-in", otherHideCls, hideCls); el.classList.add(hideCls); });
+      if (summaryDef) { summaryDef.style.transition = "none"; summaryDef.classList.remove("anim-in", otherHideCls, hideCls); summaryDef.classList.add(hideCls); }
+      void header.offsetHeight; allTargets.forEach(function(el) { el.style.transition = ""; });
+      if (summaryDef) summaryDef.style.transition = "";
     header.classList.remove("trans-anim-out"); header.classList.add("trans-anim"); header.classList.remove(hideCls); header.classList.add("anim-in");
     rowTargets.forEach(function(rowEl, i) { var t = setTimeout(function() { rowEl.classList.remove("trans-anim-out"); rowEl.classList.add("trans-anim"); rowEl.classList.remove(hideCls); rowEl.classList.add("anim-in"); }, 80 + i * 60); animTimers.push(t); });
+    if (summaryDef) {
+      var sdt = setTimeout(function() { summaryDef.classList.remove("trans-anim-out"); summaryDef.classList.add("trans-anim"); summaryDef.classList.remove(hideCls); summaryDef.classList.add("anim-in"); }, 80 + rowTargets.length * 60);
+      animTimers.push(sdt);
+    }
     var settleT = setTimeout(function() { _rowsSettled = true; renderTicker(); revealCrowns(); }, rowTargets.length * 60 + 80 + 500);
     animTimers.push(settleT);
-  } else {
-    _rowsSettled = false;
-    rowEls.forEach(function(w) { w.style.transition = "none"; });
-    rowTargets.forEach(function(rowEl, i) { var t = setTimeout(function() { rowEl.classList.remove("trans-anim"); rowEl.classList.add("trans-anim-out"); void rowEl.offsetHeight; rowEl.classList.remove("anim-in"); rowEl.classList.add(hideCls); }, (rowTargets.length - 1 - i) * 60); animTimers.push(t); });
+    } else {
+      _rowsSettled = false;
+      rowEls.forEach(function(w) { w.style.transition = "none"; });
+      var summaryDefOut = summaryBox();
+      if (summaryDefOut) {
+        summaryDefOut.classList.remove("trans-anim");
+        summaryDefOut.classList.add("trans-anim-out");
+        summaryDefOut.classList.remove("anim-in");
+        summaryDefOut.classList.add(hideCls);
+      }
+      rowTargets.forEach(function(rowEl, i) { var t = setTimeout(function() { rowEl.classList.remove("trans-anim"); rowEl.classList.add("trans-anim-out"); void rowEl.offsetHeight; rowEl.classList.remove("anim-in"); rowEl.classList.add(hideCls); }, (rowTargets.length - 1 - i) * 60); animTimers.push(t); });
     var t = setTimeout(function() { header.classList.remove("trans-anim"); header.classList.add("trans-anim-out"); void header.offsetHeight; header.classList.remove("anim-in"); header.classList.add(hideCls); }, rowTargets.length * 60 + 80); animTimers.push(t);
-    var hideT = setTimeout(function() {
-      document.querySelector(".ticker-header").style.display = "none";
-      rowEls.forEach(function(w) { w.style.display = "none"; w.style.transition = ""; });
-    }, rowTargets.length * 60 + 80 + 500);
+      var hideT = setTimeout(function() {
+        document.querySelector(".ticker-header").style.display = "none";
+        rowEls.forEach(function(w) { w.style.display = "none"; w.style.transition = ""; });
+        var summaryHideDef = summaryBox();
+        if (summaryHideDef) summaryHideDef.style.display = "none";
+      }, rowTargets.length * 60 + 80 + 500);
     animTimers.push(hideT);
   }
 }

@@ -135,8 +135,21 @@ html, body {
   flex-shrink: 0;
 }
 
+.ticker-summary > span:not(.sum-box) {
+  width: 92px;
+  text-align: center;
+}
+
 .ticker-summary .sum-alive { background: var(--bar-alive); }
 .ticker-summary .sum-dead { background: var(--bar-dead); }
+
+.ticker-summary.curtain-flip {
+  transform: rotateX(90deg);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ticker-summary.curtain-flip.flipped {
+  transform: rotateX(0deg);
+}
 
 .row-wrap {
   position: absolute;
