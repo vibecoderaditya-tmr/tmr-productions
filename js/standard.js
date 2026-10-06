@@ -78,6 +78,7 @@ const db = firebase.database();
 let teamsData = null;
 let liveData  = {};
 let matchTeams = {};
+let matchesData = {};
 
 let prevElims = {};
 let prevPts   = {};
@@ -178,6 +179,21 @@ function animateCount(el, from, to) {
   }, interval);
 }
 
+function collectBackfillTags(have, need) {
+  var keys = Object.keys(matchesData || {}).filter(function(k) { return /^match\d+$/.test(k); });
+  keys.sort(function(a, b) { return parseInt(b.slice(5), 10) - parseInt(a.slice(5), 10); });
+  var out = [];
+  for (var i = 0; i < keys.length && out.length < need; i++) {
+    var node = matchesData[keys[i]] || {};
+    var teams = (node && node.teams) || {};
+    var tags = Object.keys(teams).sort();
+    for (var j = 0; j < tags.length && out.length < need; j++) {
+      if (!have[tags[j]] && out.indexOf(tags[j]) === -1) { out.push(tags[j]); have[tags[j]] = true; }
+    }
+  }
+  return out;
+}
+
 function renderTicker() {
   // Roster: teams playing in the live node first (live entries carry
   // 2_isTeamAlive; meta keys like 3_status don't). If fewer than
@@ -210,12 +226,14 @@ function renderTicker() {
   var have = {};
   liveEntries.forEach(function(e) { have[e.tag] = true; });
   var fillerEntries = [];
-  if (liveEntries.length < NUM_ROWS) {
-    fillerEntries = Object.keys(matchTeams || {}).filter(function(tag) {
-      return !have[tag] && matchTeams[tag] && typeof matchTeams[tag] === "object";
-    }).map(toEntry).sort(sortFn).slice(0, NUM_ROWS - liveEntries.length);
+  var need = NUM_ROWS - liveEntries.length;
+  if (need > 0) {
+    fillerEntries = collectBackfillTags(have, need).map(toEntry);
   }
   let entries = liveEntries.concat(fillerEntries).sort(sortFn);
+  if (entries.length < NUM_ROWS && entries.every(function(e) { return e.tag !== "TMR"; })) {
+    entries.push(toEntry("TMR"));
+  }
 
   const rowHeight = 40;
   const rowGap    = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--row-gap')) || 0;
@@ -421,6 +439,7 @@ db.ref("/matches").on("value", snap => {
     if (m) { var n = parseInt(m[1], 10); if (n > highestNum) { highestNum = n; matchKey = key; } }
   }
   matchTeams = (matchKey && data[matchKey] && data[matchKey].teams) || {};
+  matchesData = data;
   renderTicker();
 });
 
