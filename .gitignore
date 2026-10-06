@@ -10,3 +10,5 @@ version.txt
 __pycache__
 *.py
 *.md
+!scripts/
+!scripts/vercel-cleanup.py 

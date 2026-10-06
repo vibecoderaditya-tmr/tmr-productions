@@ -1,0 +1,36 @@
+name: Vercel deployment cleanup
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run only (no deletion)?"
+        type: choice
+        options: ["true", "false"]
+        default: "true"
+  schedule:
+    - cron: "30 3 * * *"   # daily at 03:30 UTC
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install requests
+
+      - name: Run cleanup
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+          VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
+          KEEP: "10"
+          # Manual runs use the dropdown. Scheduled runs only delete if the repo
+          # variable ENABLE_DELETE is set to "true"; otherwise they stay dry-run.
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || vars.ENABLE_DELETE != 'true' }}
+        run: python scripts/vercel_cleanup.py
