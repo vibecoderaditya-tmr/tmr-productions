@@ -33,4 +33,4 @@ jobs:
           # Manual runs use the dropdown. Scheduled runs only delete if the repo
           # variable ENABLE_DELETE is set to "true"; otherwise they stay dry-run.
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || vars.ENABLE_DELETE != 'true' }}
-        run: python scripts/vercel_cleanup.py
+        run: python scripts/vercel-cleanup.py
