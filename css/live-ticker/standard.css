@@ -110,6 +110,34 @@ html, body {
   overflow-y: visible;
 }
 
+.ticker-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: var(--row-height);
+  margin-top: var(--row-gap);
+  background: var(--header-bg);
+  color: var(--header-text);
+  border: 1px solid var(--header-border);
+  border-radius: 0 0 6px 6px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  overflow: hidden;
+}
+
+.ticker-summary .sum-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.ticker-summary .sum-alive { background: var(--bar-alive); }
+.ticker-summary .sum-dead { background: var(--bar-dead); }
+
 .row-wrap {
   position: absolute;
   left: 0;
