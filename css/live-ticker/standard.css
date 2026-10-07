@@ -91,7 +91,11 @@ html, body {
   display: flex;
   align-items: center;
   height: 40px;
-  background: var(--header-bg);
+  background-color: var(--header-bg);
+  background-image: url("../../img/assets/headerBg.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border: 1px solid var(--header-border);
   border-radius: 6px 6px 0 0;
   font-size: 16px;
@@ -171,7 +175,11 @@ html, body {
   display: flex;
   align-items: stretch;
   height: var(--row-height);
-  background: var(--row-bg);
+  background-color: var(--row-bg);
+  background-image: url("../../img/assets/rowbg.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border-bottom: 1px solid var(--row-border);
   font-size: 20px;
   color: var(--row-text);
@@ -203,6 +211,16 @@ html, body {
 .ticker-row .col-pts     { display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 700; color: var(--col-pts-row); background: var(--col-pts-bg); }
 .ticker-row .col-alive   { position: relative; text-align: center; display: flex; align-items: center; justify-content: center; gap: var(--bar-gap); color: var(--col-alive-row); background: var(--col-alive-bg); }
 .ticker-row .col-end     { background: var(--col-end-bg); }
+
+/* Let the row image show through: cells go transparent.
+   Specificity (0,2,0) stays below the observed-team highlight (0,4,0),
+   so the gold highlight still wins on highlighted rows. */
+.ticker-row .col-rank,
+.ticker-row .col-team,
+.ticker-row .col-elims,
+.ticker-row .col-pts,
+.ticker-row .col-alive,
+.ticker-row .col-end { background-color: transparent; }
 .col-alive.struck {
   position: relative;
 }
