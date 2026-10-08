@@ -25,6 +25,23 @@ function loadLogo(imgEl, tag) {
   imgEl.src = "img/logos/" + file + ".webp";
 }
 
+var _pmtTopImgFallback = "img/booyah/booyahTeam.webp";
+
+function pmtSetTopImg(imgEl, tag) {
+  var clean = String(tag || "").trim().replace(/[^a-zA-Z0-9_-]/g, "").toLowerCase();
+  if (!clean) {
+    imgEl.onerror = null;
+    if (imgEl.getAttribute("src") !== _pmtTopImgFallback) imgEl.src = _pmtTopImgFallback;
+    return;
+  }
+  var target = "img/teams/" + clean + ".webp";
+  imgEl.onerror = function() {
+    imgEl.onerror = null;
+    if (imgEl.getAttribute("src") !== _pmtTopImgFallback) imgEl.src = _pmtTopImgFallback;
+  };
+  if (imgEl.getAttribute("src") !== target) imgEl.src = target;
+}
+
 // --- perMpt leaderboard ---
 var _pmtTeams = {};
 var _pmtOverallTeams = {};
@@ -139,14 +156,17 @@ function pmtRender(animate) {
   }
 
   var topLogo = document.getElementById("pmt-top-logo");
-  if (topLogo) {
-    var found = null;
-    for (var tag in _pmtTeams) {
-      if ((_pmtTeams[tag].place || 0) === 12) { found = _pmtTeams[tag]; break; }
-    }
-    if (found) {
-      loadLogo(topLogo, found.tag);
-    }
+  var topImg = document.querySelector(".pmt-top-img");
+  var found = null;
+  for (var tag in _pmtTeams) {
+    if ((_pmtTeams[tag].place || 0) === 12) { found = _pmtTeams[tag]; break; }
+  }
+  if (topLogo && found) {
+    loadLogo(topLogo, found.tag);
+  }
+  if (topImg) {
+    if (found) pmtSetTopImg(topImg, found.tag);
+    else pmtSetTopImg(topImg, null);
   }
 }
 
