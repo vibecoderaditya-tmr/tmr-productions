@@ -121,7 +121,11 @@ html, body {
   gap: 28px;
   height: var(--row-height);
   margin-top: var(--row-gap);
-  background: var(--header-bg);
+  background-color: var(--header-bg);
+  background-image: url("../../img/assets/headerBg.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   color: var(--header-text);
   border: 1px solid var(--header-border);
   border-radius: 0 0 6px 6px;
