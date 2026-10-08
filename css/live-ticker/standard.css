@@ -27,8 +27,8 @@
   --bar-gap: 3px;
 
   --logo-size: 36px;
-  --header-gap: 5px;
-  --row-gap: 5px;
+  --header-gap: 0px;
+  --row-gap: 0px;
   --row-height: 40px;
   --bar-left: 19px;
 
