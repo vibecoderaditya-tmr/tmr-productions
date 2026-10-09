@@ -378,6 +378,7 @@ function handleSave(btn) {
   if (fail) { setStatus(status, fail[0], 'err', fail[1]); return; }
   if (!Object.keys(updates).length) { setStatus(status, 'NO DATA', 'err', 'No players to save'); return; }
 
+  updates['kills'] = total;
   updates['5_totalKills'] = total;
 
   var original = btn.textContent;
