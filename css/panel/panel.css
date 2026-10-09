@@ -261,9 +261,9 @@ body {
   font-size: 12px;
   letter-spacing: 0.5px;
   text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   cursor: default;
 }
 
