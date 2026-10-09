@@ -21,6 +21,10 @@ var shellBuilt = false;
 var lastEditorSig = null;
 var lastNavSig = null;
 
+/* Same table as tmr.py:78, verified against live match data. */
+var PLACEMENT_POINTS = { 1:12, 2:9, 3:8, 4:7, 5:6, 6:5, 7:4, 8:3, 9:2, 10:1, 11:0, 12:0 };
+var RANK_UID = '__rank';
+
 function esc(s) {
   return String(s === null || s === undefined ? '' : s)
     .replace(/&/g, '&amp;')
@@ -108,7 +112,10 @@ function teamsBlockData(target) {
       if (raw !== '' && !isFinite(Number(raw))) raw = '';
       list.push({ uid: uid, name: pl.playerName || uid, kills: raw });
     }
-    out.push({ tag: tag, players: list });
+    var team = teams[tag] || {};
+    var rankRaw = (team.rank === undefined || team.rank === null) ? '' : String(team.rank);
+    if (rankRaw !== '' && !isFinite(Number(rankRaw))) rankRaw = '';
+    out.push({ tag: tag, players: list, rank: rankRaw });
   }
   out.sort(function(a, b) {
     if (a.tag === b.tag) return 0;
@@ -124,7 +131,7 @@ function editorSignature(target, blocks) {
     for (var j = 0; j < blocks[i].players.length; j++) {
       inner.push(blocks[i].players[j].uid + ':' + blocks[i].players[j].name);
     }
-    parts.push(blocks[i].tag + '=' + inner.join(','));
+    parts.push(blocks[i].tag + '@' + blocks[i].rank + '=' + inner.join(','));
   }
   return parts.join('|');
 }
@@ -132,6 +139,7 @@ function editorSignature(target, blocks) {
 function findKills(blocks, tag, uid) {
   for (var i = 0; i < blocks.length; i++) {
     if (blocks[i].tag !== tag) continue;
+    if (uid === RANK_UID) return blocks[i].rank;
     for (var j = 0; j < blocks[i].players.length; j++) {
       if (blocks[i].players[j].uid === uid) return blocks[i].players[j].kills;
     }
@@ -178,10 +186,7 @@ function teamBlocksHTML(blocks) {
     var b = blocks[i];
     html += '<div class="team-block" data-tag="' + esc(b.tag) + '">' +
       '<div class="team-row team-row-top">' +
-        '<div class="team-col">' +
-          '<span class="team-tag">' + esc(b.tag) + '</span>' +
-          '<span class="team-total">KILLS ' + playersTotal(b.players) + '</span>' +
-        '</div>' +
+        '<span class="team-tag">' + esc(b.tag) + '</span>' +
         '<div class="cells">';
 
     for (var j = 0; j < b.players.length; j++) {
@@ -190,10 +195,14 @@ function teamBlocksHTML(blocks) {
     }
 
     html += '</div>' +
-        '<span class="team-slot"></span>' +
+        '<span class="team-slot">' +
+          '<input class="prank" type="number" min="1" max="12" step="1" inputmode="numeric" ' +
+          'data-tag="' + esc(b.tag) + '" data-uid="' + RANK_UID + '" ' +
+          'value="' + esc(b.rank) + '" title="Team rank (1-12)" placeholder="POS">' +
+        '</span>' +
       '</div>' +
       '<div class="team-row team-row-edit">' +
-        '<span class="team-tag team-tag-space"></span>' +
+        '<span class="team-total">KILLS ' + playersTotal(b.players) + '</span>' +
         '<div class="cells">';
 
     for (var k = 0; k < b.players.length; k++) {
@@ -221,7 +230,7 @@ function editKey(tag, uid) { return tag + '/' + uid; }
 /* Roster changes rebuild the whole list, so unsaved typing is carried across. */
 function captureEdits(list) {
   var map = {};
-  var inputs = list.querySelectorAll('input.pkills');
+  var inputs = list.querySelectorAll('input.pkills, input.prank');
   for (var i = 0; i < inputs.length; i++) {
     var inp = inputs[i];
     if (!inp._edited) continue;
@@ -234,7 +243,7 @@ function captureEdits(list) {
 }
 
 function applyEdits(list, edits) {
-  var inputs = list.querySelectorAll('input.pkills');
+  var inputs = list.querySelectorAll('input.pkills, input.prank');
   for (var i = 0; i < inputs.length; i++) {
     var inp = inputs[i];
     var e = edits[editKey(inp.getAttribute('data-tag'), inp.getAttribute('data-uid'))];
@@ -298,7 +307,7 @@ function renderBody() {
 /* Only touch inputs the operator is not focused in and has not edited,
    so a background Firebase update can never wipe typing in progress. */
 function syncValues(list, blocks) {
-  var inputs = list.querySelectorAll('input.pkills');
+  var inputs = list.querySelectorAll('input.pkills, input.prank');
   for (var i = 0; i < inputs.length; i++) {
     var inp = inputs[i];
     if (inp === document.activeElement) continue;
@@ -359,42 +368,78 @@ function handleSave(btn) {
 
   var tag = block.getAttribute('data-tag');
   var inputs = block.querySelectorAll('input.pkills');
+  var rankInp = block.querySelector('input.prank');
   var updates = {};
   var fail = null;
   var total = 0;
 
-  for (var i = 0; i < inputs.length; i++) {
-    var inp = inputs[i];
-    var name = inp.getAttribute('data-name') || inp.getAttribute('data-uid');
-    var raw = String(inp.value).trim();
-    if (raw === '') { fail = ['EMPTY', 'Empty value for ' + name]; break; }
-    var v = Number(raw);
-    if (!isFinite(v) || v < 0 || Math.floor(v) !== v) { fail = ['BAD NUMBER', 'Invalid kills for ' + name]; break; }
-    updates['players/' + inp.getAttribute('data-uid') + '/kills'] = v;
-    inp._written = String(v);
-    total += v;
+  var rank = null;
+  if (rankInp) {
+    var rraw = String(rankInp.value).trim();
+    if (rraw === '') { fail = ['EMPTY', 'Empty rank for ' + tag]; }
+    else {
+      var rv = Number(rraw);
+      if (!isFinite(rv) || Math.floor(rv) !== rv || rv < 1 || rv > 12) {
+        fail = ['BAD RANK', 'Rank for ' + tag + ' must be 1-12'];
+      } else {
+        rank = rv;
+      }
+    }
+  }
+
+  if (!fail) {
+    for (var i = 0; i < inputs.length; i++) {
+      var inp = inputs[i];
+      var name = inp.getAttribute('data-name') || inp.getAttribute('data-uid');
+      var raw = String(inp.value).trim();
+      if (raw === '') { fail = ['EMPTY', 'Empty value for ' + name]; break; }
+      var v = Number(raw);
+      if (!isFinite(v) || v < 0 || Math.floor(v) !== v) { fail = ['BAD NUMBER', 'Invalid kills for ' + name]; break; }
+      updates[tag + '/players/' + inp.getAttribute('data-uid') + '/kills'] = v;
+      inp._written = String(v);
+      total += v;
+    }
   }
 
   if (fail) { setStatus(status, fail[0], 'err', fail[1]); return; }
-  if (!Object.keys(updates).length) { setStatus(status, 'NO DATA', 'err', 'No players to save'); return; }
+  if (!inputs.length) { setStatus(status, 'NO DATA', 'err', 'No players to save'); return; }
 
-  updates['kills'] = total;
-  updates['5_totalKills'] = total;
+  var node = (matchesData && matchesData[target] && matchesData[target].teams && matchesData[target].teams[tag]) || {};
+  var killPoints = Number(node.killPoints);
+  if (!isFinite(killPoints)) killPoints = Number(node.kills);
+  if (!isFinite(killPoints)) killPoints = 0;
+
+  var placePts = PLACEMENT_POINTS[rank];
+
+  updates[tag + '/kills'] = total;
+  updates[tag + '/5_totalKills'] = total;
+  updates[tag + '/rank'] = rank;
+  updates[tag + '/placementPoints'] = placePts;
+  updates[tag + '/totalScore'] = killPoints + placePts;
+  updates[tag + '/booyah'] = rank === 1 ? 1 : 0;
+
+  if (rank === 1) {
+    var teamsNode = (matchesData && matchesData[target] && matchesData[target].teams) || {};
+    for (var other in teamsNode) {
+      if (other !== tag) updates[other + '/booyah'] = 0;
+    }
+  }
 
   var original = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'SAVING';
 
-  db.ref('/matches/' + target + '/teams/' + tag).update(updates).then(function() {
+  db.ref('/matches/' + target + '/teams').update(updates).then(function() {
     btn.disabled = false;
     btn.textContent = original;
     for (var i = 0; i < inputs.length; i++) inputs[i]._lastWrite = inputs[i]._written;
-    setStatus(status, 'SAVED', 'ok', 'Kills saved');
+    if (rankInp) rankInp._lastWrite = String(rank);
+    setStatus(status, 'SAVED', 'ok', 'Kills, rank and points saved');
   }).catch(function(err) {
     btn.disabled = false;
     btn.textContent = original;
     setStatus(status, 'ERROR', 'err', String((err && err.message) || err));
-    if (window.console && console.error) console.error('[panel] kills save failed:', err);
+    if (window.console && console.error) console.error('[panel] save failed:', err);
   });
 }
 
@@ -406,9 +451,12 @@ if (bodyEl) {
   });
   bodyEl.addEventListener('input', function(e) {
     var t = e.target;
-    if (t && t.classList && t.classList.contains('pkills')) {
+    if (!t || !t.classList) return;
+    if (t.classList.contains('pkills')) {
       t._edited = true;
       updateTotals(bodyEl.querySelector('.team-list'));
+    } else if (t.classList.contains('prank')) {
+      t._edited = true;
     }
   });
 }

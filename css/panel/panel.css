@@ -206,20 +206,9 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.team-tag-space { visibility: hidden; }
-
-.team-col {
+.team-total {
   width: 92px;
   flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-}
-.team-col .team-tag { width: 100%; }
-
-.team-total {
-  max-width: 100%;
   padding: 3px 6px;
   background: var(--bg);
   border: 1px solid var(--border);
@@ -229,6 +218,7 @@ body {
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--text-mid);
+  text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -284,6 +274,24 @@ body {
 .pkills::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .pkills[type="number"] { -moz-appearance: textfield; }
 
+.prank {
+  width: 64px;
+  padding: 9px 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-align: center;
+  outline: none;
+  flex-shrink: 0;
+}
+.prank:focus { border-color: var(--accent); }
+.prank::-webkit-outer-spin-button,
+.prank::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.prank[type="number"] { -moz-appearance: textfield; }
+
 .team-save {
   padding: 9px 16px;
   background: var(--accent);
@@ -335,36 +343,36 @@ body {
 
   .team-block {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 10px;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    column-gap: 8px;
     row-gap: 8px;
     padding: 10px 12px;
   }
 
   .team-row { display: contents; }
 
-  .team-col {
+  .team-tag {
     grid-column: 1;
     grid-row: 1;
-    width: auto;
-    min-width: 0;
     align-self: center;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
   }
-  .team-col .team-tag {
-    width: auto;
-    min-width: 0;
-    flex: 0 1 auto;
+  .team-total {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    justify-self: start;
   }
-  .team-col .team-total { flex-shrink: 0; }
 
-  .team-row-top .team-slot,
-  .team-tag-space { display: none; }
+  .team-row-top .team-slot {
+    grid-column: 3;
+    grid-row: 1;
+    width: auto;
+    align-self: center;
+  }
+  .team-row-top .prank { width: 48px; }
 
   .team-row-edit .team-slot {
-    grid-column: 2;
+    grid-column: 4;
     grid-row: 1;
     width: auto;
     align-self: center;
