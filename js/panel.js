@@ -45,13 +45,12 @@ function matchKeys() {
   return keys;
 }
 
-/* LIVE tab edits the newest match; a MATCH N tab edits that match.
-   This is the node every save writes to. */
+/* LIVE tab edits the live node (production shape: tag → {TAG}Player{n}).
+   MATCH N tabs edit that match's record (teams/{tag}/players/{uid}). */
+function isLiveTab() { return activeTab === 'live'; }
+
 function targetMatchKey() {
-  if (activeTab === 'live') {
-    var keys = matchKeys();
-    return keys.length ? keys[keys.length - 1] : null;
-  }
+  if (isLiveTab()) return 'live';
   return activeTab;
 }
 
@@ -110,12 +109,37 @@ function teamsBlockData(target) {
       var pl = players[uid] || {};
       var raw = (pl.kills === undefined || pl.kills === null) ? '' : String(pl.kills);
       if (raw !== '' && !isFinite(Number(raw))) raw = '';
-      list.push({ uid: uid, name: pl.playerName || uid, kills: raw });
+      list.push({ uid: uid, name: pl.playerName || uid, kills: raw, alive: !(Number(pl.isAlive) === 0) });
     }
     var team = teams[tag] || {};
     var rankRaw = (team.rank === undefined || team.rank === null) ? '' : String(team.rank);
     if (rankRaw !== '' && !isFinite(Number(rankRaw))) rankRaw = '';
     out.push({ tag: tag, players: list, rank: rankRaw });
+  }
+  out.sort(function(a, b) {
+    if (a.tag === b.tag) return 0;
+    return a.tag < b.tag ? -1 : 1;
+  });
+  return out;
+}
+
+/* Production live shape: /matches/live/{TAG} holds 1_teamTag plus
+   {TAG}Player{n} children (playerUID, playerName, kills, isAlive).
+   Non-team keys (meta scalars, killfeed, …) carry no 1_teamTag. */
+function liveBlocksData() {
+  var out = [];
+  for (var tag in liveData || {}) {
+    var node = liveData[tag];
+    if (!node || typeof node !== 'object' || node['1_teamTag'] === undefined) continue;
+    var list = [];
+    for (var key in node) {
+      var pl = node[key];
+      if (!pl || typeof pl !== 'object' || pl.playerUID === undefined) continue;
+      var raw = (pl.kills === undefined || pl.kills === null) ? '' : String(pl.kills);
+      if (raw !== '' && !isFinite(Number(raw))) raw = '';
+      list.push({ uid: key, name: pl.playerName || key, kills: raw, alive: !(Number(pl.isAlive) === 0) });
+    }
+    out.push({ tag: tag, players: list, rank: '' });
   }
   out.sort(function(a, b) {
     if (a.tag === b.tag) return 0;
@@ -147,19 +171,49 @@ function findKills(blocks, tag, uid) {
   return '';
 }
 
+function findAlive(blocks, tag, uid) {
+  for (var i = 0; i < blocks.length; i++) {
+    if (blocks[i].tag !== tag) continue;
+    for (var j = 0; j < blocks[i].players.length; j++) {
+      if (blocks[i].players[j].uid === uid) return blocks[i].players[j].alive;
+    }
+  }
+  return null;
+}
+
+/* Alive state changes constantly during a live match — update the button
+   colors in place instead of rebuilding the list, so focus and typing
+   in the kill inputs survive every Firebase push. */
+function syncAlive(list, blocks) {
+  var btns = list.querySelectorAll('.pname[data-uid]');
+  for (var i = 0; i < btns.length; i++) {
+    var btn = btns[i];
+    var alive = findAlive(blocks, btn.getAttribute('data-tag'), btn.getAttribute('data-uid'));
+    if (alive === null) continue;
+    var want = alive ? 'alive' : 'dead';
+    if (!btn.classList.contains(want)) {
+      btn.classList.remove('alive', 'dead');
+      btn.classList.add(want);
+    }
+  }
+}
+
 /* ---------------- html ---------------- */
 
 function headContentHTML() {
   var html = '';
 
-  if (activeTab === 'live') {
-    var keys = matchKeys();
-    var lastKey = keys.length ? keys[keys.length - 1] : '';
-    var meta = (lastKey && matchesData && matchesData[lastKey] && matchesData[lastKey].meta) || {};
+  if (isLiveTab()) {
+    var map = (liveData && typeof liveData['1_mapName'] === 'string') ? liveData['1_mapName'] : '';
     var status = (liveData && typeof liveData['3_status'] === 'string') ? liveData['3_status'] : '';
+    var timer = (liveData && typeof liveData['97_timer'] === 'string') ? liveData['97_timer'] : '';
+    var tCount = (liveData && liveData['98_teamCount'] !== undefined) ? liveData['98_teamCount'] : null;
+    var pCount = (liveData && liveData['99_playerCount'] !== undefined) ? liveData['99_playerCount'] : null;
     html += '<span class="pane-title">Live</span>';
-    if (lastKey) html += '<span class="pane-meta">Game ' + parseInt(lastKey.slice(5), 10) + '</span>';
-    if (meta.mapName) html += '<span class="pane-meta">' + esc(meta.mapName) + '</span>';
+    if (map) html += '<span class="pane-meta">' + esc(map) + '</span>';
+    if (tCount !== null) html += '<span class="pane-meta">TEAMS ' + esc(tCount) + '</span>';
+    if (pCount !== null) html += '<span class="pane-meta">PLAYERS ' + esc(pCount) + '</span>';
+    if (timer) html += '<span class="pane-meta">' + esc(timer) + '</span>';
     if (status) html += '<span class="pane-status' + (status === 'running' ? ' running' : '') + '">' + esc(status) + '</span>';
   } else {
     var node = (matchesData && matchesData[activeTab]) || {};
@@ -180,27 +234,54 @@ function playersTotal(players) {
   return sum;
 }
 
+function playersAlive(players) {
+  var n = 0;
+  for (var i = 0; i < players.length; i++) {
+    if (players[i].alive) n++;
+  }
+  return n;
+}
+
 function teamBlocksHTML(blocks) {
   var html = '';
+  var canToggle = activeTab === 'live';
   for (var i = 0; i < blocks.length; i++) {
     var b = blocks[i];
     html += '<div class="team-block" data-tag="' + esc(b.tag) + '">' +
       '<div class="team-row team-row-top">' +
-        '<span class="team-tag">' + esc(b.tag) + '</span>' +
-        '<div class="cells">';
+        '<span class="team-tag">' + esc(b.tag) + '</span>';
 
-    for (var j = 0; j < b.players.length; j++) {
-      html += '<button type="button" class="pname" title="' + esc(b.players[j].name) + '">' +
-              esc(b.players[j].name) + '</button>';
+    if (canToggle) {
+      html += '<span class="team-alive">ALIVE: ' + playersAlive(b.players) + '</span>';
     }
 
-    html += '</div>' +
-        '<span class="team-slot">' +
+    html += '<div class="cells">';
+
+    for (var j = 0; j < b.players.length; j++) {
+      if (canToggle) {
+        html += '<button type="button" class="pname ' + (b.players[j].alive ? 'alive' : 'dead') + '" ' +
+                'title="' + esc(b.players[j].name) + ' — click to toggle alive" ' +
+                'data-tag="' + esc(b.tag) + '" data-uid="' + esc(b.players[j].uid) + '">' +
+                esc(b.players[j].name) + '</button>';
+      } else {
+        html += '<span class="pname" title="' + esc(b.players[j].name) + '">' +
+                esc(b.players[j].name) + '</span>';
+      }
+    }
+
+    html += '</div>';
+
+    if (!canToggle) {
+      html += '<span class="team-slot">' +
           '<input class="prank" type="number" min="1" max="12" step="1" inputmode="numeric" ' +
           'data-tag="' + esc(b.tag) + '" data-uid="' + RANK_UID + '" ' +
           'value="' + esc(b.rank) + '" title="Team rank (1-12)" placeholder="POS">' +
-        '</span>' +
-      '</div>' +
+        '</span>';
+    } else {
+      html += '<span class="team-slot"></span>';
+    }
+
+    html += '</div>' +
       '<div class="team-row team-row-edit">' +
         '<span class="team-total">KILLS ' + playersTotal(b.players) + '</span>' +
         '<div class="cells">';
@@ -275,9 +356,14 @@ function renderBody() {
   head.innerHTML = headContentHTML();
 
   var target = targetMatchKey();
-  var blocks = (matchesLoaded && target) ? teamsBlockData(target) : [];
+  var blocks = [];
+  if (matchesLoaded) {
+    if (isLiveTab()) blocks = liveBlocksData();
+    else if (target) blocks = teamsBlockData(target);
+  }
   var msg = '';
   if (!matchesLoaded) msg = 'Loading…';
+  else if (isLiveTab()) { if (!blocks.length) msg = 'Waiting for live data'; }
   else if (!target) msg = 'No match played yet';
   else if (!blocks.length) msg = 'No teams for this match';
 
@@ -300,7 +386,10 @@ function renderBody() {
     updateTotals(list);
   } else {
     syncValues(list, blocks);
+    syncAlive(list, blocks);
     updateTotals(list);
+    var blockEls = list.querySelectorAll('.team-block');
+    for (var bi = 0; bi < blockEls.length; bi++) refreshAlive(blockEls[bi]);
   }
 }
 
@@ -318,6 +407,47 @@ function syncValues(list, blocks) {
     }
     if (inp.value !== v) inp.value = v;
   }
+}
+
+/* ---------------- alive toggle ---------------- */
+
+function refreshAlive(block) {
+  if (!block) return;
+  var el = block.querySelector('.team-alive');
+  if (!el) return;
+  var btns = block.querySelectorAll('.pname');
+  var n = 0;
+  for (var i = 0; i < btns.length; i++) {
+    if (btns[i].classList.contains('alive')) n++;
+  }
+  el.textContent = 'ALIVE: ' + n;
+}
+
+/* Clicking a player name flips alive/dead and writes isAlive immediately.
+   LIVE-tab only (match tabs render plain spans). Independent of SAVE. */
+function handleAliveToggle(btn) {
+  var block = btn.closest ? btn.closest('.team-block') : null;
+  if (!block || !isLiveTab()) return;
+
+  var tag = btn.getAttribute('data-tag');
+  var uid = btn.getAttribute('data-uid');
+  var status = block.querySelector('.save-status');
+  if (!tag || !uid) return;
+
+  var wasAlive = btn.classList.contains('alive');
+  var next = wasAlive ? 0 : 1;
+
+  btn.classList.remove('alive', 'dead');
+  btn.classList.add(next === 1 ? 'alive' : 'dead');
+  refreshAlive(block);
+
+  db.ref('/matches/live/' + tag + '/' + uid).update({ isAlive: next }).catch(function(err) {
+    btn.classList.remove('alive', 'dead');
+    btn.classList.add(wasAlive ? 'alive' : 'dead');
+    refreshAlive(block);
+    setStatus(status, 'ERROR', 'err', String((err && err.message) || err));
+    if (window.console && console.error) console.error('[panel] alive toggle failed:', err);
+  });
 }
 
 /* ---------------- save ---------------- */
@@ -395,7 +525,11 @@ function handleSave(btn) {
       if (raw === '') { fail = ['EMPTY', 'Empty value for ' + name]; break; }
       var v = Number(raw);
       if (!isFinite(v) || v < 0 || Math.floor(v) !== v) { fail = ['BAD NUMBER', 'Invalid kills for ' + name]; break; }
-      updates[tag + '/players/' + inp.getAttribute('data-uid') + '/kills'] = v;
+      if (isLiveTab()) {
+        updates[tag + '/' + inp.getAttribute('data-uid') + '/kills'] = v;
+      } else {
+        updates[tag + '/players/' + inp.getAttribute('data-uid') + '/kills'] = v;
+      }
       inp._written = String(v);
       total += v;
     }
@@ -404,37 +538,40 @@ function handleSave(btn) {
   if (fail) { setStatus(status, fail[0], 'err', fail[1]); return; }
   if (!inputs.length) { setStatus(status, 'NO DATA', 'err', 'No players to save'); return; }
 
-  var node = (matchesData && matchesData[target] && matchesData[target].teams && matchesData[target].teams[tag]) || {};
-  var killPoints = Number(node.killPoints);
-  if (!isFinite(killPoints)) killPoints = Number(node.kills);
-  if (!isFinite(killPoints)) killPoints = 0;
-
-  var placePts = PLACEMENT_POINTS[rank];
-
-  updates[tag + '/kills'] = total;
   updates[tag + '/5_totalKills'] = total;
-  updates[tag + '/rank'] = rank;
-  updates[tag + '/placementPoints'] = placePts;
-  updates[tag + '/totalScore'] = killPoints + placePts;
-  updates[tag + '/booyah'] = rank === 1 ? 1 : 0;
 
-  if (rank === 1) {
-    var teamsNode = (matchesData && matchesData[target] && matchesData[target].teams) || {};
-    for (var other in teamsNode) {
-      if (other !== tag) updates[other + '/booyah'] = 0;
+  var writeRef;
+  if (isLiveTab()) {
+    writeRef = db.ref('/matches/live');
+  } else {
+    updates[tag + '/kills'] = total;
+    updates[tag + '/rank'] = rank;
+    updates[tag + '/placementPoints'] = PLACEMENT_POINTS[rank];
+    var node = (matchesData && matchesData[target] && matchesData[target].teams && matchesData[target].teams[tag]) || {};
+    var killPoints = Number(node.killPoints);
+    if (!isFinite(killPoints)) killPoints = Number(node.kills);
+    if (!isFinite(killPoints)) killPoints = 0;
+    updates[tag + '/totalScore'] = killPoints + PLACEMENT_POINTS[rank];
+    updates[tag + '/booyah'] = rank === 1 ? 1 : 0;
+    if (rank === 1) {
+      var teamsNode = (matchesData && matchesData[target] && matchesData[target].teams) || {};
+      for (var other in teamsNode) {
+        if (other !== tag) updates[other + '/booyah'] = 0;
+      }
     }
+    writeRef = db.ref('/matches/' + target + '/teams');
   }
 
   var original = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'SAVING';
 
-  db.ref('/matches/' + target + '/teams').update(updates).then(function() {
+  writeRef.update(updates).then(function() {
     btn.disabled = false;
     btn.textContent = original;
     for (var i = 0; i < inputs.length; i++) inputs[i]._lastWrite = inputs[i]._written;
     if (rankInp) rankInp._lastWrite = String(rank);
-    setStatus(status, 'SAVED', 'ok', 'Kills, rank and points saved');
+    setStatus(status, 'SAVED', 'ok', isLiveTab() ? 'Live kills saved' : 'Kills, rank and points saved');
   }).catch(function(err) {
     btn.disabled = false;
     btn.textContent = original;
@@ -447,7 +584,9 @@ if (bodyEl) {
   bodyEl.addEventListener('click', function(e) {
     if (!e.target || !e.target.closest) return;
     var btn = e.target.closest('.team-save');
-    if (btn && !btn.disabled) handleSave(btn);
+    if (btn && !btn.disabled) { handleSave(btn); return; }
+    var pbtn = e.target.closest('.pname');
+    if (pbtn && pbtn.hasAttribute && pbtn.hasAttribute('data-uid')) handleAliveToggle(pbtn);
   });
   bodyEl.addEventListener('input', function(e) {
     var t = e.target;

@@ -206,6 +206,17 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.team-alive {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  white-space: nowrap;
+  align-self: center;
+}
 .team-total {
   width: 92px;
   flex-shrink: 0;
@@ -255,6 +266,17 @@ body {
   overflow-wrap: anywhere;
   word-break: break-word;
   cursor: default;
+}
+.pname[data-uid] { cursor: pointer; }
+.pname.alive {
+  background: rgba(95, 208, 138, 0.12);
+  border-color: rgba(95, 208, 138, 0.55);
+  color: var(--alive);
+}
+.pname.dead {
+  background: rgba(233, 69, 96, 0.12);
+  border-color: rgba(233, 69, 96, 0.55);
+  color: var(--dead);
 }
 
 .pkills {
@@ -343,7 +365,7 @@ body {
 
   .team-block {
     display: grid;
-    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    grid-template-columns: auto auto auto minmax(0, 1fr) auto;
     column-gap: 8px;
     row-gap: 8px;
     padding: 10px 12px;
@@ -357,8 +379,13 @@ body {
     align-self: center;
   }
 
-  .team-row-top .team-slot {
+  .team-alive {
     grid-column: 2;
+    grid-row: 1;
+  }
+
+  .team-row-top .team-slot {
+    grid-column: 3;
     grid-row: 1;
     width: auto;
     align-self: center;
@@ -366,7 +393,7 @@ body {
   .team-row-top .prank { width: 48px; }
 
   .team-total {
-    grid-column: 3;
+    grid-column: 4;
     grid-row: 1;
     align-self: center;
     justify-self: start;
@@ -374,7 +401,7 @@ body {
   }
 
   .team-row-edit .team-slot {
-    grid-column: 4;
+    grid-column: 5;
     grid-row: 1;
     width: auto;
     align-self: center;
