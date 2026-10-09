@@ -163,13 +163,25 @@ function headContentHTML() {
   return html;
 }
 
+function playersTotal(players) {
+  var sum = 0;
+  for (var i = 0; i < players.length; i++) {
+    var v = Number(players[i].kills);
+    if (isFinite(v)) sum += v;
+  }
+  return sum;
+}
+
 function teamBlocksHTML(blocks) {
   var html = '';
   for (var i = 0; i < blocks.length; i++) {
     var b = blocks[i];
     html += '<div class="team-block" data-tag="' + esc(b.tag) + '">' +
       '<div class="team-row team-row-top">' +
-        '<span class="team-tag">' + esc(b.tag) + '</span>' +
+        '<div class="team-col">' +
+          '<span class="team-tag">' + esc(b.tag) + '</span>' +
+          '<span class="team-total">KILLS ' + playersTotal(b.players) + '</span>' +
+        '</div>' +
         '<div class="cells">';
 
     for (var j = 0; j < b.players.length; j++) {
@@ -276,8 +288,10 @@ function renderBody() {
     lastEditorSig = sig;
     list.innerHTML = teamBlocksHTML(blocks);
     applyEdits(list, edits);
+    updateTotals(list);
   } else {
     syncValues(list, blocks);
+    updateTotals(list);
   }
 }
 
@@ -298,6 +312,25 @@ function syncValues(list, blocks) {
 }
 
 /* ---------------- save ---------------- */
+
+function blockTotal(block) {
+  var inputs = block.querySelectorAll('input.pkills');
+  var sum = 0;
+  for (var i = 0; i < inputs.length; i++) {
+    var v = Number(String(inputs[i].value).trim());
+    if (isFinite(v)) sum += v;
+  }
+  return sum;
+}
+
+function updateTotals(list) {
+  if (!list) return;
+  var blocks = list.querySelectorAll('.team-block');
+  for (var i = 0; i < blocks.length; i++) {
+    var el = blocks[i].querySelector('.team-total');
+    if (el) el.textContent = 'KILLS ' + blockTotal(blocks[i]);
+  }
+}
 
 function setStatus(el, text, kind, title) {
   if (!el) return;
@@ -328,6 +361,7 @@ function handleSave(btn) {
   var inputs = block.querySelectorAll('input.pkills');
   var updates = {};
   var fail = null;
+  var total = 0;
 
   for (var i = 0; i < inputs.length; i++) {
     var inp = inputs[i];
@@ -336,18 +370,21 @@ function handleSave(btn) {
     if (raw === '') { fail = ['EMPTY', 'Empty value for ' + name]; break; }
     var v = Number(raw);
     if (!isFinite(v) || v < 0 || Math.floor(v) !== v) { fail = ['BAD NUMBER', 'Invalid kills for ' + name]; break; }
-    updates[inp.getAttribute('data-uid') + '/kills'] = v;
+    updates['players/' + inp.getAttribute('data-uid') + '/kills'] = v;
     inp._written = String(v);
+    total += v;
   }
 
   if (fail) { setStatus(status, fail[0], 'err', fail[1]); return; }
   if (!Object.keys(updates).length) { setStatus(status, 'NO DATA', 'err', 'No players to save'); return; }
 
+  updates['5_totalKills'] = total;
+
   var original = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'SAVING';
 
-  db.ref('/matches/' + target + '/teams/' + tag + '/players').update(updates).then(function() {
+  db.ref('/matches/' + target + '/teams/' + tag).update(updates).then(function() {
     btn.disabled = false;
     btn.textContent = original;
     for (var i = 0; i < inputs.length; i++) inputs[i]._lastWrite = inputs[i]._written;
@@ -368,7 +405,10 @@ if (bodyEl) {
   });
   bodyEl.addEventListener('input', function(e) {
     var t = e.target;
-    if (t && t.classList && t.classList.contains('pkills')) t._edited = true;
+    if (t && t.classList && t.classList.contains('pkills')) {
+      t._edited = true;
+      updateTotals(bodyEl.querySelector('.team-list'));
+    }
   });
 }
 
