@@ -17,6 +17,67 @@ var gameEl = document.getElementById('winnerGame');
 var latestMatchData = null;
 var winnerVisible = false;
 var winnerRerenderT = null;
+var winnerCountGen = 0;
+var _winnerLastKey = null;
+var _winnerLastLayout = null;
+
+function winnerSortedEntries(rosters) {
+  var keys = Object.keys(rosters || {});
+  keys.sort(function(a, b) {
+    return (rosters[b].kills || 0) - (rosters[a].kills || 0);
+  });
+  var arr = [];
+  for (var i = 0; i < keys.length; i++) {
+    var r = rosters[keys[i]] || {};
+    arr.push({ uid: keys[i], playerName: r.playerName || '', kills: r.kills || 0, knockDown: r.knockDown || 0, activeSkill: r.activeSkill || '' });
+  }
+  return arr;
+}
+
+function winnerMvpFlags(arr) {
+  var maxKills = 0, maxKnocks = 0;
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i].kills > maxKills) { maxKills = arr[i].kills; maxKnocks = 0; }
+    if (arr[i].kills === maxKills && (arr[i].knockDown || 0) > maxKnocks) maxKnocks = arr[i].knockDown || 0;
+  }
+  var flags = [];
+  for (var j = 0; j < arr.length; j++) {
+    flags.push(arr[j].kills === maxKills && (arr[j].knockDown || 0) >= maxKnocks && maxKills > 0 ? 1 : 0);
+  }
+  return flags;
+}
+
+function winnerFullKey(tag, arr, totalKills) {
+  return (tag || '') + '|' + (Number(totalKills) || 0) + '|' + JSON.stringify(arr);
+}
+
+function winnerLayoutKey(tag, arr, mvpFlags) {
+  var parts = [];
+  for (var i = 0; i < arr.length; i++) parts.push(arr[i].uid + ':' + arr[i].playerName + ':' + (mvpFlags[i] ? 1 : 0));
+  return (tag || '') + '|' + parts.join(',');
+}
+
+function patchWinnerNumbers(arr, totalKills) {
+  winnerCountGen++;
+  var totalKnocks = 0;
+  for (var i = 0; i < arr.length; i++) totalKnocks += arr[i].knockDown || 0;
+  var cards = grid.querySelectorAll('.winner-card');
+  for (var c = 0; c < arr.length && c < cards.length; c++) {
+    (function(card, p) {
+      var shareKills  = totalKills > 0 ? (p.kills || 0) / totalKills : 0;
+      var shareKnocks = totalKnocks > 0 ? ((p.knockDown || 0) / totalKnocks) : 0;
+      var contri = shareKills * 70 + shareKnocks * 30;
+      var elimsSpan = card.querySelector('.winner-stat-col:first-child .winner-stat-value');
+      var knocksSpan = card.querySelector('.winner-stat-col:last-child .winner-stat-value');
+      var contriSpan = card.querySelector('.winner-contri-value');
+      var contriFill = card.querySelector('.winner-contri-fill');
+      if (elimsSpan) elimsSpan.textContent = String(p.kills || 0);
+      if (knocksSpan) knocksSpan.textContent = String(p.knockDown || 0);
+      if (contriSpan) contriSpan.textContent = contri.toFixed(2) + '%';
+      if (contriFill) contriFill.style.width = contri + '%';
+    })(cards[c], arr[c]);
+  }
+}
 
 var CHAR_IMAGES = [
   'A124','Alok','Alvaro','Alvaro Awaken','Andrew','Andrew Awaken',
@@ -89,9 +150,10 @@ function shufflePool() {
   localStorage.setItem('winnerImgIdx', '0');
 }
 
-function animateValue(el, from, to, duration, suffix) {
+function animateValue(el, from, to, duration, suffix, gen) {
   var start = performance.now();
   function tick(now) {
+    if (typeof gen !== 'undefined' && gen !== winnerCountGen) return;
     var t = Math.min((now - start) / duration, 1);
     var p = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     var val = Math.round(from + (to - from) * p);
@@ -101,9 +163,10 @@ function animateValue(el, from, to, duration, suffix) {
   requestAnimationFrame(tick);
 }
 
-function animateContri(el, from, to, duration) {
+function animateContri(el, from, to, duration, gen) {
   var start = performance.now();
   function tick(now) {
+    if (typeof gen !== 'undefined' && gen !== winnerCountGen) return;
     var t = Math.min((now - start) / duration, 1);
     var p = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     el.textContent = (from + (to - from) * p).toFixed(2) + '%';
@@ -113,25 +176,15 @@ function animateContri(el, from, to, duration) {
 }
 
 function renderWinner(tag, rosters, totalKills, advanceCycle) {
-  var sorted = [];
-  var keys = Object.keys(rosters);
-  keys.sort(function(a, b) {
-    return (rosters[b].kills || 0) - (rosters[a].kills || 0);
-  });
-
-  for (var i = 0; i < keys.length; i++) {
-    sorted.push(rosters[keys[i]]);
-  }
+  var cg = ++winnerCountGen;
+  var sorted = winnerSortedEntries(rosters);
+  var mvpFlags = winnerMvpFlags(sorted);
+  _winnerLastKey = winnerFullKey(tag, sorted, totalKills);
+  _winnerLastLayout = winnerLayoutKey(tag, sorted, mvpFlags);
 
   var charImages = getNextImages(advanceCycle);
 
   grid.innerHTML = '';
-
-  var maxKills = 0, maxKnocks = 0;
-  for (var i = 0; i < sorted.length; i++) {
-    if (sorted[i].kills > maxKills) { maxKills = sorted[i].kills; maxKnocks = 0; }
-    if (sorted[i].kills === maxKills && (sorted[i].knockDown || 0) > maxKnocks) maxKnocks = sorted[i].knockDown || 0;
-  }
 
   var totalKnocks = 0;
   for (var i = 0; i < sorted.length; i++) totalKnocks += sorted[i].knockDown || 0;
@@ -141,15 +194,24 @@ function renderWinner(tag, rosters, totalKills, advanceCycle) {
     var shareKills  = totalKills > 0 ? (p.kills || 0) / totalKills : 0;
     var shareKnocks = totalKnocks > 0 ? ((p.knockDown || 0) / totalKnocks) : 0;
     var contri = (shareKills * 70 + shareKnocks * 30).toFixed(2);
-    var isMvp = p.kills === maxKills && (p.knockDown || 0) >= maxKnocks && maxKills > 0;
+    var isMvp = mvpFlags[i] === 1;
 
     var mvpBadge = isMvp ? '<div class="winner-mvp-badge"><span class="winner-mvp-text">MVP</span></div>' : '';
+
+    var charSrc = 'img/characters/' + charImages[i % charImages.length] + '.webp';
+    var cleanUid = String(p.uid || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+    var playerSrc = cleanUid ? 'img/players/' + cleanUid + '.webp' : null;
+    var skillName = String(p.activeSkill || '').trim();
+    var skillSrc = (skillName && CHAR_IMAGES.indexOf(skillName) !== -1)
+      ? 'img/characters/' + skillName + '.webp' : null;
+    var photoChain = [playerSrc, skillSrc, charSrc].filter(Boolean);
+    var photoSrc = photoChain[0];
 
     var card = document.createElement('div');
     card.className = 'winner-card';
     card.innerHTML =
       '<div class="winner-card-left">' +
-        '<div class="winner-card-logo"><div class="winner-card-logo-clip"><img src="img/characters/' + charImages[i] + '.webp" alt=""></div></div>' +
+        '<div class="winner-card-logo"><div class="winner-card-logo-clip"><img src="' + photoSrc + '" alt=""></div></div>' +
         mvpBadge +
       '</div>' +
       '<div class="winner-card-right">' +
@@ -180,6 +242,19 @@ function renderWinner(tag, rosters, totalKills, advanceCycle) {
     var nameEl = card.querySelector('.winner-card-right-name');
     if (nameEl) nameEl.textContent = p.playerName || 'Player ' + (i + 1);
 
+    var photoEl = card.querySelector('.winner-card-logo-clip img');
+    if (photoEl) {
+      (function(img, chain) {
+        var step = 0;
+        img.onerror = function() {
+          step++;
+          while (step < chain.length && img.getAttribute('src') === chain[step]) step++;
+          if (step >= chain.length) { img.onerror = null; return; }
+          img.src = chain[step];
+        };
+      })(photoEl, photoChain);
+    }
+
     grid.appendChild(card);
   }
 
@@ -193,6 +268,7 @@ function renderWinner(tag, rosters, totalKills, advanceCycle) {
 
       // Start counters after enter anims finish
       setTimeout(function() {
+        if (cg !== winnerCountGen) return;
         var cards = grid.querySelectorAll('.winner-card');
         for (var ci = 0; ci < cards.length; ci++) {
           (function(card, p, totalKills, totalKnocks) {
@@ -203,9 +279,9 @@ function renderWinner(tag, rosters, totalKills, advanceCycle) {
             var knocksSpan = card.querySelector('.winner-stat-col:last-child .winner-stat-value');
             var contriSpan = card.querySelector('.winner-contri-value');
             var contriFill = card.querySelector('.winner-contri-fill');
-            if (elimsSpan) animateValue(elimsSpan, 0, p.kills || 0, 1200);
-            if (knocksSpan) animateValue(knocksSpan, 0, p.knockDown || 0, 1200);
-            if (contriSpan) animateContri(contriSpan, 0, contri, 1200);
+            if (elimsSpan) animateValue(elimsSpan, 0, p.kills || 0, 1200, null, cg);
+            if (knocksSpan) animateValue(knocksSpan, 0, p.knockDown || 0, 1200, null, cg);
+            if (contriSpan) animateContri(contriSpan, 0, contri, 1200, cg);
             if (contriFill) {
               contriFill.style.transition = 'width 1.2s ease-in-out';
               contriFill.style.width = contri + '%';
@@ -246,22 +322,32 @@ db.ref('/matches').on('value', function(snap) {
       var rosters = {};
       for (var uid in playersNode) {
         var p = playersNode[uid];
-        rosters[uid] = { playerName: p.playerName || '', kills: p.kills || 0, knockDown: p.knockDown || 0 };
+        rosters[uid] = { playerName: p.playerName || '', kills: p.kills || 0, knockDown: p.knockDown || 0, activeSkill: p.activeSkill || '' };
       }
       latestMatchData = { tag: wtag, rosters: rosters, totalKills: wteam.kills || 0 };
     } else {
       latestMatchData = null;
     }
     gameEl.textContent = 'GAME ' + highestNum + ' - ' + ((match.meta && match.meta.mapName) || '');
-    // If winner is on screen, re-render live so Firebase edits show
-    // without hide+show. Debounced to coalesce rapid updates; images
-    // don't advance on live re-renders (advanceCycle=false).
+    // If winner is on screen, reflect Firebase edits without hide+show.
+    // Debounced to coalesce rapid updates. Identical snapshots are
+    // skipped; numbers-only changes patch in place (no animation replay);
+    // only a roster/MVP change triggers a full re-render. Fallback images
+    // stay put on patched updates (advanceCycle=false still applies).
     if (winnerVisible && latestMatchData) {
       if (winnerRerenderT) clearTimeout(winnerRerenderT);
       winnerRerenderT = setTimeout(function() {
         winnerRerenderT = null;
-        if (winnerVisible && latestMatchData) {
-          renderWinner(latestMatchData.tag, latestMatchData.rosters || {}, parseInt(latestMatchData.totalKills) || 0, false);
+        if (!winnerVisible || !latestMatchData) return;
+        var d = latestMatchData;
+        var arr = winnerSortedEntries(d.rosters || {});
+        var tk = parseInt(d.totalKills) || 0;
+        if (winnerFullKey(d.tag, arr, tk) === _winnerLastKey) return;
+        if (winnerLayoutKey(d.tag, arr, winnerMvpFlags(arr)) === _winnerLastLayout) {
+          patchWinnerNumbers(arr, tk);
+          _winnerLastKey = winnerFullKey(d.tag, arr, tk);
+        } else {
+          renderWinner(d.tag, d.rosters || {}, tk, false);
         }
       }, 800);
     }
@@ -329,6 +415,9 @@ db.ref('/live-graphics/winner').on('value', function(snap) {
     shufflePool();
   } else if (val === 'hide') {
     winnerVisible = false;
+    winnerCountGen++;
+    _winnerLastKey = null;
+    _winnerLastLayout = null;
     if (winnerRerenderT) { clearTimeout(winnerRerenderT); winnerRerenderT = null; }
     grid.innerHTML = '';
   }
