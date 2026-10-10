@@ -29,7 +29,7 @@ function winnerSortedEntries(rosters) {
   var arr = [];
   for (var i = 0; i < keys.length; i++) {
     var r = rosters[keys[i]] || {};
-    arr.push({ uid: keys[i], playerName: r.playerName || '', kills: r.kills || 0, knockDown: r.knockDown || 0 });
+    arr.push({ uid: keys[i], playerName: r.playerName || '', kills: r.kills || 0, knockDown: r.knockDown || 0, activeSkill: r.activeSkill || '' });
   }
   return arr;
 }
@@ -200,13 +200,18 @@ function renderWinner(tag, rosters, totalKills, advanceCycle) {
 
     var charSrc = 'img/characters/' + charImages[i % charImages.length] + '.webp';
     var cleanUid = String(p.uid || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-    var playerSrc = cleanUid ? 'img/players/' + cleanUid + '.webp' : charSrc;
+    var playerSrc = cleanUid ? 'img/players/' + cleanUid + '.webp' : null;
+    var skillName = String(p.activeSkill || '').trim();
+    var skillSrc = (skillName && CHAR_IMAGES.indexOf(skillName) !== -1)
+      ? 'img/characters/' + skillName + '.webp' : null;
+    var photoChain = [playerSrc, skillSrc, charSrc].filter(Boolean);
+    var photoSrc = photoChain[0];
 
     var card = document.createElement('div');
     card.className = 'winner-card';
     card.innerHTML =
       '<div class="winner-card-left">' +
-        '<div class="winner-card-logo"><div class="winner-card-logo-clip"><img src="' + playerSrc + '" alt=""></div></div>' +
+        '<div class="winner-card-logo"><div class="winner-card-logo-clip"><img src="' + photoSrc + '" alt=""></div></div>' +
         mvpBadge +
       '</div>' +
       '<div class="winner-card-right">' +
@@ -239,12 +244,15 @@ function renderWinner(tag, rosters, totalKills, advanceCycle) {
 
     var photoEl = card.querySelector('.winner-card-logo-clip img');
     if (photoEl) {
-      (function(img, fallback) {
+      (function(img, chain) {
+        var step = 0;
         img.onerror = function() {
-          img.onerror = null;
-          if (img.getAttribute('src') !== fallback) img.src = fallback;
+          step++;
+          while (step < chain.length && img.getAttribute('src') === chain[step]) step++;
+          if (step >= chain.length) { img.onerror = null; return; }
+          img.src = chain[step];
         };
-      })(photoEl, charSrc);
+      })(photoEl, photoChain);
     }
 
     grid.appendChild(card);
@@ -314,7 +322,7 @@ db.ref('/matches').on('value', function(snap) {
       var rosters = {};
       for (var uid in playersNode) {
         var p = playersNode[uid];
-        rosters[uid] = { playerName: p.playerName || '', kills: p.kills || 0, knockDown: p.knockDown || 0 };
+        rosters[uid] = { playerName: p.playerName || '', kills: p.kills || 0, knockDown: p.knockDown || 0, activeSkill: p.activeSkill || '' };
       }
       latestMatchData = { tag: wtag, rosters: rosters, totalKills: wteam.kills || 0 };
     } else {
