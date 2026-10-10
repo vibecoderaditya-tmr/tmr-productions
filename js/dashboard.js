@@ -8,12 +8,9 @@ var firebaseConfig = {
   appId:             "1:317037791388:web:755b5a18bb77aa140a4559"
 };
 
-var OPERATOR_PIN = "6558";
-
 firebase.initializeApp(firebaseConfig);
 var db = firebase.database();
 
-var authenticated = false;
 var currentPromptId = null;
 var currentReplyRef = null;
 var awaitingInput = false;
@@ -74,31 +71,11 @@ function stripMd(s) {
           .trim();
 }
 
-function checkPin() {
-  var val = document.getElementById("pin-input").value;
-  if (val === OPERATOR_PIN) {
-    authenticated = true;
-    var ps = document.getElementById("pin-screen");
-    ps.style.opacity = "0";
-    setTimeout(function(){
-      ps.style.display = "none";
-      var ms = document.getElementById("main-screen");
-      ms.style.display = "flex";
-      setTimeout(function(){ ms.style.opacity = "1"; }, 20);
-    }, 350);
-    startListeners();
-    addLog("Panel connected \u2014 waiting for TMR tracker.", "sys");
-  } else {
-    var err = document.getElementById("pin-error");
-    err.textContent = "incorrect pin";
-    var inp = document.getElementById("pin-input");
-    inp.value = "";
-    inp.classList.add("shake");
-    setTimeout(function(){ inp.classList.remove("shake"); }, 500);
-  }
-}
+window.addEventListener("load", function() {
+  startListeners();
+  addLog("Panel connected \u2014 waiting for TMR tracker.", "sys");
+});
 
-function pinKeydown(e)   { if (e.key === "Enter") checkPin(); }
 function inputKeydown(e) {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();

@@ -285,3 +285,8 @@ window.pickColor = pickColor;
     })(btns[i]);
   }
 })();
+
+function scrollTabBar(dir) {
+  var bar = document.getElementById('tabBar');
+  if (bar) bar.scrollBy({ left: dir * 160, behavior: 'smooth' });
+}
