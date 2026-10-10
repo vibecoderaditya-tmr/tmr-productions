@@ -778,6 +778,11 @@ function initTabBar() {
   }
 }
 
+function scrollTabBar(dir) {
+  var bar = document.getElementById('tabBar');
+  if (bar) bar.scrollBy({ left: dir * 160, behavior: 'smooth' });
+}
+
 function loadFirebaseData(callback) {
   var paths = [];
   for (var i = 0; i < TABS.length; i++) {

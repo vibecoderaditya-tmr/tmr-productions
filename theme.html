@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <link rel="stylesheet" href="css/controller/controller.css">
 <link rel="stylesheet" href="css/theme/theme.css">
 </head>
@@ -26,19 +27,23 @@
 
   <div class="theme-page-body">
 
-    <div class="tab-bar" id="tabBar">
-      <button class="tab-btn active" data-tab="ticker">Ticker</button>
-      <button class="tab-btn" data-tab="eliminated">Eliminated</button>
-      <button class="tab-btn" data-tab="eliminated-bmps">Eliminated · BMPS</button>
-      <button class="tab-btn" data-tab="winrate">Win Rate</button>
-      <button class="tab-btn" data-tab="winner">Winner</button>
-      <button class="tab-btn" data-tab="hud">HUD</button>
-      <button class="tab-btn" data-tab="cralert">CR Alert</button>
-      <button class="tab-btn" data-tab="cractivated">CR Activated</button>
-      <button class="tab-btn" data-tab="perMatchPt">perMatchPt</button>
-      <button class="tab-btn" data-tab="osPt">osPt</button>
-      <button class="tab-btn" data-tab="gameInfo">Game Info</button>
-      <button class="tab-btn" data-tab="teamStats">Team Stats</button>
+    <div class="tab-nav">
+      <button type="button" class="nav-arrow" onclick="scrollTabBar(-1)">◀</button>
+      <div class="tab-bar" id="tabBar">
+        <button class="tab-btn active" data-tab="ticker">Ticker</button>
+        <button class="tab-btn" data-tab="eliminated">Eliminated</button>
+        <button class="tab-btn" data-tab="eliminated-bmps">Eliminated · BMPS</button>
+        <button class="tab-btn" data-tab="winrate">Win Rate</button>
+        <button class="tab-btn" data-tab="winner">Winner</button>
+        <button class="tab-btn" data-tab="hud">HUD</button>
+        <button class="tab-btn" data-tab="cralert">CR Alert</button>
+        <button class="tab-btn" data-tab="cractivated">CR Activated</button>
+        <button class="tab-btn" data-tab="perMatchPt">perMatchPt</button>
+        <button class="tab-btn" data-tab="osPt">osPt</button>
+        <button class="tab-btn" data-tab="gameInfo">Game Info</button>
+        <button class="tab-btn" data-tab="teamStats">Team Stats</button>
+      </div>
+      <button type="button" class="nav-arrow" onclick="scrollTabBar(1)">▶</button>
     </div>
 
     <div id="tabBody">
@@ -2015,6 +2020,7 @@
 </div>
 
 <script src="js/theme.js"></script>
+<script src="js/authGuard.js"></script>
 </body>
 </html>
 

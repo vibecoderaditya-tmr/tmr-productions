@@ -37,127 +37,6 @@ body {
   );
 }
 
-/* ── PIN SCREEN ──────────────────────────────────────────── */
-#pin-screen {
-  position: fixed; inset: 0;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  background: var(--bg);
-  background-image: repeating-linear-gradient(
-    135deg,
-    transparent, transparent 40px,
-    rgba(74,93,107,0.06) 40px, rgba(74,93,107,0.06) 41px
-  );
-  z-index: 100;
-  transition: opacity 0.35s ease;
-}
-
-.pin-wordmark {
-  font-family: var(--font-head);
-  font-weight: 800;
-  font-size: 72px;
-  letter-spacing: -3px;
-  color: var(--text-hi);
-  line-height: 1;
-  margin-bottom: 6px;
-  text-shadow:
-    0 1px 0 var(--c3),
-    0 2px 0 rgba(46,62,77,0.8);
-}
-
-.pin-rule {
-  width: 48px; height: 2px;
-  background: var(--c3);
-  margin: 0 auto 6px;
-}
-
-.pin-tagline {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 300;
-  letter-spacing: 5px;
-  color: var(--text-low);
-  text-transform: uppercase;
-  margin-bottom: 48px;
-}
-
-.pin-card {
-  width: 300px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 32px 28px 28px;
-  position: relative;
-  box-shadow:
-    inset 0 1px 0 rgba(98,116,125,0.4),
-    0 8px 32px rgba(35,47,58,0.6);
-}
-
-.pin-label {
-  font-size: 9px;
-  letter-spacing: 4px;
-  color: var(--text-low);
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-#pin-input {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-bottom: 2px solid var(--c3);
-  color: var(--text-hi);
-  font-family: var(--font-mono);
-  font-size: 26px;
-  letter-spacing: 10px;
-  text-align: center;
-  padding: 12px 16px;
-  outline: none;
-  transition: border-color 0.2s, background 0.2s;
-  margin-bottom: 14px;
-}
-
-#pin-input:focus {
-  background: var(--card);
-  border-color: var(--c3);
-  border-bottom-color: var(--text-hi);
-}
-
-.pin-btn {
-  width: 100%;
-  background: var(--c2);
-  color: var(--text-hi);
-  border: none;
-  font-family: var(--font-head);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 4px;
-  padding: 14px;
-  cursor: pointer;
-  text-transform: uppercase;
-  transition: background 0.2s;
-  box-shadow: inset 0 1px 0 rgba(98,116,125,0.3);
-}
-
-.pin-btn:hover  { background: var(--c3); }
-.pin-btn:active { background: var(--c1); }
-
-#pin-error {
-  font-size: 9px;
-  letter-spacing: 3px;
-  color: #7a6a6a;
-  text-align: center;
-  margin-top: 10px;
-  min-height: 14px;
-  text-transform: uppercase;
-}
-
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  20%,60% { transform: translateX(-5px); }
-  40%,80% { transform: translateX(5px); }
-}
-.shake { animation: shake 0.4s ease; }
-
 /* ── HEADER ──────────────────────────────────────────────── */
 .header {
   display: flex;
@@ -371,11 +250,9 @@ body {
 
 /* ── TWO-COLUMN LAYOUT ────────────────────────────────────── */
 #main-screen {
-  display: none;
+  display: flex;
   flex-direction: column;
   height: 100vh;
-  opacity: 0;
-  transition: opacity 0.4s ease;
 }
 
 .main-body {
@@ -615,8 +492,6 @@ body {
 
 /* ── MOBILE ───────────────────────────────────────────────── */
 @media (max-width: 480px) {
-  .pin-wordmark { font-size: 52px; }
-  .pin-card     { width: calc(100vw - 40px); }
   .h-sub, .h-sep { display: none; }
   .header { padding: 0 16px; height: 48px; }
 

@@ -6,23 +6,17 @@
 <title>TMR — Live Graphics</title>
 <link rel="icon" type="image/x-icon" href="img/icon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <link rel="stylesheet" href="css/index/index.css">
 </head>
 <body>
 
-<div class="passcode-modal" id="passcode-modal">
-  <div class="passcode-box">
-    <div class="passcode-title">ENTER PASSCODE</div>
-    <input type="password" class="passcode-input" id="passcode-input" placeholder="· · · ·" maxlength="4">
-    <button class="passcode-submit" id="passcode-submit">UNLOCK</button>
-    <div class="passcode-error" id="passcode-error"></div>
-  </div>
-</div>
-
-<div class="wrapper" id="main-content" style="display:none;">
+<div class="wrapper" id="main-content">
 
   <div class="header">
     <div class="header-tag">TMR Esports // Control Hub</div>
+    <button class="signout-btn" id="signout-btn">Sign out</button>
     <div class="logo-wrap">
       <img src="img/icon.ico" alt="TMR">
       <h1>Live <span>Graphics</span></h1>
@@ -214,24 +208,27 @@
 </div>
 
 <script>
-var OPERATOR_PIN = "6558";
-
-document.getElementById("passcode-submit").onclick = function() {
-  var val = document.getElementById("passcode-input").value.trim();
-  if (val === OPERATOR_PIN) {
-    document.getElementById("passcode-modal").style.display = "none";
-    document.getElementById("main-content").style.display = "";
-  } else {
-    document.getElementById("passcode-error").textContent = "Wrong passcode";
-    document.getElementById("passcode-input").value = "";
-    document.getElementById("passcode-input").focus();
-  }
+var firebaseConfig = {
+  apiKey:            "AIzaSyC21mdsgyIEqXT7ujFbi0xcVAMRZxxqB1I",
+  authDomain:        "tmraditya-1ceb7.firebaseapp.com",
+  databaseURL:       "https://tmraditya-1ceb7-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "tmraditya-1ceb7",
+  storageBucket:     "tmraditya-1ceb7.firebasestorage.app",
+  messagingSenderId: "317037791388",
+  appId:             "1:317037791388:web:755b5a18bb77aa140a4559"
 };
 
-document.getElementById("passcode-input").onkeydown = function(e) {
-  if (e.key === "Enter") document.getElementById("passcode-submit").click();
+firebase.initializeApp(firebaseConfig);
+
+document.getElementById("signout-btn").onclick = function() {
+  firebase.auth().signOut().then(function() {
+    location.replace("login.html");
+  }, function() {
+    location.replace("login.html");
+  });
 };
 </script>
+<script src="js/authGuard.js"></script>
 
 </body>
 </html>

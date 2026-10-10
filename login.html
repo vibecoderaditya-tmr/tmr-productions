@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TMR · Sign in</title>
+<link rel="icon" href="img/icon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<link rel="stylesheet" href="css/login/login.css">
+</head>
+<body>
+
+<div class="login-page">
+  <div class="login-wordmark">TMR</div>
+  <div class="login-rule"></div>
+  <div class="login-tagline">Operator Access</div>
+  <div class="login-card">
+    <div class="login-label">Username</div>
+    <input id="login-username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus>
+    <div class="login-label">Password</div>
+    <input id="login-password" type="password" autocomplete="current-password">
+    <button class="login-btn" id="login-submit">Sign in</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<script src="js/login.js"></script>
+</body>
+</html>

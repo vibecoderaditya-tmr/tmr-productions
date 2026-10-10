@@ -9,24 +9,12 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <link rel="stylesheet" href="css/dashboard/dashboard.css">
 <script src="js/dashboard.js"></script>
+<script src="js/authGuard.js"></script>
 </head>
 <body>
-
-<!-- PIN -->
-<div id="pin-screen">
-  <div class="pin-wordmark">TMR</div>
-  <div class="pin-rule"></div>
-  <div class="pin-tagline">Operator Access Panel</div>
-  <div class="pin-card">
-    <div class="pin-label">Enter PIN to continue</div>
-    <input id="pin-input" type="password" maxlength="8"
-           onkeydown="pinKeydown(event)" autofocus>
-    <button class="pin-btn" onclick="checkPin()">Authenticate</button>
-    <div id="pin-error"></div>
-  </div>
-</div>
 
 <!-- MAIN -->
 <div id="main-screen">
